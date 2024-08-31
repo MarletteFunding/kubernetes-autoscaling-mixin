@@ -95,7 +95,7 @@ local tbOverride = tbStandardOptions.override;
           }
         )
       )
-    ||| % $._config,
+    |||,
 
     local pdbDisruptionsAllowedStatPanel =
       statPanel.new(
@@ -126,7 +126,7 @@ local tbOverride = tbStandardOptions.override;
           }
         )
       )
-    ||| % $._config,
+    |||,
 
     local pdbDesiredHealthyStatPanel =
       statPanel.new(
@@ -157,7 +157,7 @@ local tbOverride = tbStandardOptions.override;
           }
         )
       )
-    ||| % $._config,
+    |||,
 
     local pdbCurrentlyHealthyStatPanel =
       statPanel.new(
@@ -188,7 +188,7 @@ local tbOverride = tbStandardOptions.override;
           }
         )
       )
-    ||| % $._config,
+    |||,
 
     local pdbExpectedPodsStatPanel =
       statPanel.new(
@@ -274,8 +274,8 @@ local tbOverride = tbStandardOptions.override;
       tsLegend.withDisplayMode('table') +
       tsLegend.withPlacement('right') +
       tsLegend.withCalcs(['lastNotNull', 'mean', 'max']) +
-      tsLegend.withSortBy('Name') +
-      tsLegend.withSortDesc(false) +
+      tsLegend.withSortBy('Last *') +
+      tsLegend.withSortDesc(true) +
       tsCustom.withSpanNulls(false),
 
     local pdbDisruptionsAllowedNamespaceQuery = |||
@@ -346,8 +346,8 @@ local tbOverride = tbStandardOptions.override;
               'Value #D': 'Expected Pods',
             },
             indexByName: {
-              poddisruptionbudget: 0,
-              namespace: 1,
+              namespace: 0,
+              poddisruptionbudget: 1,
               'Value #A': 2,
               'Value #B': 3,
               'Value #C': 4,
@@ -389,7 +389,7 @@ local tbOverride = tbStandardOptions.override;
       dashboard.new(
         'Kubernetes / Autoscaling / Pod Disruption Budget 2',
       ) +
-      dashboard.withDescription('A dashboard that monitors Kubernetes / Autoscaling which focuses on giving a overview for pod disruption budgets. It is created using the [Kubernetes / Autoscaling-mixin](https://github.com/adinhodovic/kubernetes-autoscaling-mixin).') +
+      dashboard.withDescription('A dashboard that monitors Kubernetes and focuses on giving a overview for pod disruption budgets. It is created using the [Kubernetes / Autoscaling-mixin](https://github.com/adinhodovic/kubernetes-autoscaling-mixin).') +
       dashboard.withUid($._config.pdbDashboardUid) +
       dashboard.withTags($._config.tags) +
       dashboard.withTimezone('utc') +
@@ -399,7 +399,7 @@ local tbOverride = tbStandardOptions.override;
       dashboard.withVariables(variables) +
       dashboard.withLinks(
         [
-          dashboard.link.dashboards.new('Kubernetes / Autoscaling / PDB', $._config.tags) +
+          dashboard.link.dashboards.new('Kubernetes / Autoscaling', $._config.tags) +
           dashboard.link.link.options.withTargetBlank(true),
         ]
       ) +
@@ -414,12 +414,12 @@ local tbOverride = tbStandardOptions.override;
           tablePanel.gridPos.withX(0) +
           tablePanel.gridPos.withY(1) +
           tablePanel.gridPos.withW(24) +
-          tablePanel.gridPos.withH(6),
+          tablePanel.gridPos.withH(7),
         ] +
         [
           pdbSummaryRow +
           row.gridPos.withX(0) +
-          row.gridPos.withY(7) +
+          row.gridPos.withY(8) +
           row.gridPos.withW(24) +
           row.gridPos.withH(1),
         ] +
@@ -427,14 +427,14 @@ local tbOverride = tbStandardOptions.override;
           [pdbDisruptionsAllowedStatPanel, pdbDesiredHealthyStatPanel, pdbCurrentlyHealthyStatPanel, pdbExpectedPodsStatPanel],
           panelWidth=6,
           panelHeight=3,
-          startY=8
+          startY=9
         ) +
         [
           pdbStatusTimeSeriesPanel +
-          tablePanel.gridPos.withX(0) +
-          tablePanel.gridPos.withY(11) +
-          tablePanel.gridPos.withW(24) +
-          tablePanel.gridPos.withH(8),
+          timeSeriesPanel.gridPos.withX(0) +
+          timeSeriesPanel.gridPos.withY(12) +
+          timeSeriesPanel.gridPos.withW(24) +
+          timeSeriesPanel.gridPos.withH(8),
         ]
       ) +
       if $._config.annotation.enabled then

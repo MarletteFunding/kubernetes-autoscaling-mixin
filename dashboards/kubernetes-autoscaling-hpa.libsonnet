@@ -326,8 +326,8 @@ local tbQueryOptions = tablePanel.queryOptions;
       tsLegend.withDisplayMode('table') +
       tsLegend.withPlacement('right') +
       tsLegend.withCalcs(['lastNotNull', 'mean', 'max']) +
-      tsLegend.withSortBy('Name') +
-      tsLegend.withSortDesc(false) +
+      tsLegend.withSortBy('Last *') +
+      tsLegend.withSortDesc(true) +
       tsCustom.withSpanNulls(false),
 
     local hpaReplicasTimeSeriesPanel =
@@ -373,8 +373,8 @@ local tbQueryOptions = tablePanel.queryOptions;
       tsLegend.withDisplayMode('table') +
       tsLegend.withPlacement('right') +
       tsLegend.withCalcs(['lastNotNull', 'mean', 'max']) +
-      tsLegend.withSortBy('Name') +
-      tsLegend.withSortDesc(false) +
+      tsLegend.withSortBy('Last *') +
+      tsLegend.withSortDesc(true) +
       tsCustom.withSpanNulls(false),
 
     local hpaSummaryRow =
@@ -387,7 +387,7 @@ local tbQueryOptions = tablePanel.queryOptions;
       dashboard.new(
         'Kubernetes / Autoscaling / Horitzontal Pod Autoscaling 2',
       ) +
-      dashboard.withDescription('A dashboard that monitors Kubernetes HPAs which focuses on giving a overview for horizontal pod autoscalers. It is created using the [Kubernetes / Autoscaling-mixin](https://github.com/adinhodovic/kubernetes-autoscaling-mixin).') +
+      dashboard.withDescription('A dashboard that monitors Kubernetes and focuses on giving a overview for horizontal pod autoscalers. It is created using the [Kubernetes / Autoscaling-mixin](https://github.com/adinhodovic/kubernetes-autoscaling-mixin).') +
       dashboard.withUid($._config.hpaDashboardUid) +
       dashboard.withTags($._config.tags) +
       dashboard.withTimezone('utc') +

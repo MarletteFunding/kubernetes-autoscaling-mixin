@@ -15,13 +15,22 @@ local annotation = g.dashboard.annotation;
 
     pdbDashboardUid: 'kubernetes-autoscaling-mixin-pdb-jkwq',
     hpaDashboardUid: 'kubernetes-autoscaling-mixin-hpa-jkwq',
-    requestsOverviewDashboardUid: 'kubernetes-autoscaling-mixin-requests-jkwq',
-    requestsByViewDashboardUid: 'kubernetes-autoscaling-mixin-requests-by-view-jkwq',
+    vpDashboardUid: 'kubernetes-autoscaling-mixin-vp-jkwq',
+    clusterAutoscalerDashboardUid: 'kubernetes-autoscaling-mixin-ca-jkwq',
+    karpetnerDashboardUid: 'kubernetes-autoscaling-mixin-karpetner-jkwq',
+
+    clusterAutoscaler: {
+      enabled: false,
+    },
+
+    karpenter: {
+      enabled: false,
+    },
 
     overviewDashboardUrl: '%s/d/%s/kubernetes-autoscaling-mixin-overview' % [self.grafanaUrl, self.overviewDashboardUid],
     requestsByViewDashboardUrl: '%s/d/%s/kubernetes-autoscaling-mixin-requests-by-view' % [self.grafanaUrl, self.requestsByViewDashboardUid],
 
-    tags: ['kubernetes-autoscaling-mixin', 'kubernetes-autoscaling-mixin-mixin'],
+    tags: ['kubernetes', 'autoscaling', 'kubernetes-autoscaling-mixin'],
 
     // Custom annotations to display in graphs
     annotation: {
