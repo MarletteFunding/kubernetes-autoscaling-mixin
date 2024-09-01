@@ -381,7 +381,7 @@ local pieQueryOptions = pieChartPanel.queryOptions;
       ) +
       dashboard.withDescription('A dashboard that monitors Karpenter and focuses on Karpenter deletion/creation activity. It is created using the [Kubernetes Autoscaling-mixin](https://github.com/adinhodovic/kubernetes-autoscaling-mixin).') +
       dashboard.withUid($._config.karpenterActivityDashboardUid) +
-      dashboard.withTags($._config.tags) +
+      dashboard.withTags($._config.tags + ['karpenter']) +
       dashboard.withTimezone('utc') +
       dashboard.withEditable(true) +
       dashboard.time.withFrom('now-24h') +
@@ -389,7 +389,7 @@ local pieQueryOptions = pieChartPanel.queryOptions;
       dashboard.withVariables(variables) +
       dashboard.withLinks(
         [
-          dashboard.link.dashboards.new('Kubernetes / Autoscaling', $._config.tags) +
+          dashboard.link.dashboards.new('Kubernetes / Autoscaling / Karpenter', $._config.tags + ['karpenter']) +
           dashboard.link.link.options.withTargetBlank(true),
         ]
       ) +

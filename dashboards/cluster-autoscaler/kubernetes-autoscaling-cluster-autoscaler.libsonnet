@@ -453,7 +453,7 @@ local tsLegend = tsOptions.legend;
       ) +
       dashboard.withDescription('A dashboard that monitors Kubernetes and focuses on giving a overview for cluster autoscaler. It is created using the [Kubernetes / Autoscaling-mixin](https://github.com/adinhodovic/kubernetes-autoscaling-mixin).') +
       dashboard.withUid($._config.clusterAutoscalerDashboardUid) +
-      dashboard.withTags($._config.tags) +
+      dashboard.withTags($._config.tags + ['clsuter-autoscaler']) +
       dashboard.withTimezone('utc') +
       dashboard.withEditable(true) +
       dashboard.time.withFrom('now-24h') +
@@ -461,7 +461,7 @@ local tsLegend = tsOptions.legend;
       dashboard.withVariables(variables) +
       dashboard.withLinks(
         [
-          dashboard.link.dashboards.new('Kubernetes / Autoscaling', $._config.tags) +
+          dashboard.link.dashboards.new('Kubernetes / Autoscaling / Cluster Autoscaler', $._config.tags + ['cluster-autoscaler']) +
           dashboard.link.link.options.withTargetBlank(true),
         ]
       ) +

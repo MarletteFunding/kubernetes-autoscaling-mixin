@@ -9,24 +9,30 @@ local annotation = g.dashboard.annotation;
       __requires: [],
     },
 
-    kubernetesAutoscalingSelector: 'job=~"kubernetes-autoscaling-mixin"',
+    kubernetesStateMetricsSelector: 'job=~"kube-state-metrics"',
+    clusterAutoscalerSelector: 'job=~"cluster-autoscaler"',
+    karpernterSelector: 'job=~"karpenter"',
 
     grafanaUrl: 'https://grafana.com',
 
     pdbDashboardUid: 'kubernetes-autoscaling-mixin-pdb-jkwq',
     hpaDashboardUid: 'kubernetes-autoscaling-mixin-hpa-jkwq',
-    vpDashboardUid: 'kubernetes-autoscaling-mixin-vp-jkwq',
+    vpaDashboardUid: 'kubernetes-autoscaling-mixin-vpa-jkwq',
     clusterAutoscalerDashboardUid: 'kubernetes-autoscaling-mixin-ca-jkwq',
     karpenterOverviewDashboardUid: 'kubernetes-autoscaling-mixin-kover-jkwq',
     karpenterActivityDashboardUid: 'kubernetes-autoscaling-mixin-kact-jkwq',
     karpenterPerformanceDashboardUid: 'kubernetes-autoscaling-mixin-kperf-jkwq',
 
+    vpa: {
+      enabled: true,
+    },
+
     clusterAutoscaler: {
-      enabled: false,
+      enabled: true,
     },
 
     karpenter: {
-      enabled: false,
+      enabled: true,
     },
 
     overviewDashboardUrl: '%s/d/%s/kubernetes-autoscaling-mixin-overview' % [self.grafanaUrl, self.overviewDashboardUid],

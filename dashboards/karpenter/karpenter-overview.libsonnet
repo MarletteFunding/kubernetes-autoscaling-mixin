@@ -970,7 +970,7 @@ local pieQueryOptions = pieChartPanel.queryOptions;
       ) +
       dashboard.withDescription('A dashboard that monitors Karpenter and focuses on giving a overview for Karpenter. It is created using the [Kubernetes Autoscaling-mixin](https://github.com/adinhodovic/kubernetes-autoscaling-mixin).') +
       dashboard.withUid($._config.karpenterOverviewDashboardUid) +
-      dashboard.withTags($._config.tags) +
+      dashboard.withTags($._config.tags + ['karpenter']) +
       dashboard.withTimezone('utc') +
       dashboard.withEditable(true) +
       dashboard.time.withFrom('now-24h') +
@@ -978,7 +978,7 @@ local pieQueryOptions = pieChartPanel.queryOptions;
       dashboard.withVariables(variables) +
       dashboard.withLinks(
         [
-          dashboard.link.dashboards.new('Kubernetes / Autoscaling', $._config.tags) +
+          dashboard.link.dashboards.new('Kubernetes / Autoscaling / Karpenter', $._config.tags + ['karpenter']) +
           dashboard.link.link.options.withTargetBlank(true),
         ]
       ) +
@@ -1023,16 +1023,15 @@ local pieQueryOptions = pieChartPanel.queryOptions;
           panelWidth=6,
           panelHeight=5,
           startY=9
-        )
-        +
+        ) +
         [
           karpenterPodSummaryRow +
           row.gridPos.withX(0) +
           row.gridPos.withY(14) +
           row.gridPos.withW(24) +
           row.gridPos.withH(1),
-        ]
-        + grid.makeGrid(
+        ] +
+        grid.makeGrid(
           [
             karpenterPodCpuRequestsStatPanel,
             karpenterPodMemoryRequestsStatPanel,

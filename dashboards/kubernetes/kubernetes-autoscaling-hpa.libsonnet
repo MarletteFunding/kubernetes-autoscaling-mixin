@@ -389,7 +389,7 @@ local tbQueryOptions = tablePanel.queryOptions;
       ) +
       dashboard.withDescription('A dashboard that monitors Kubernetes and focuses on giving a overview for horizontal pod autoscalers. It is created using the [Kubernetes / Autoscaling-mixin](https://github.com/adinhodovic/kubernetes-autoscaling-mixin).') +
       dashboard.withUid($._config.hpaDashboardUid) +
-      dashboard.withTags($._config.tags) +
+      dashboard.withTags($._config.tags + ['kubernetes-core']) +
       dashboard.withTimezone('utc') +
       dashboard.withEditable(true) +
       dashboard.time.withFrom('now-6h') +
@@ -397,7 +397,7 @@ local tbQueryOptions = tablePanel.queryOptions;
       dashboard.withVariables(variables) +
       dashboard.withLinks(
         [
-          dashboard.link.dashboards.new('Kubernetes / Autoscaling', $._config.tags) +
+          dashboard.link.dashboards.new('Kubernetes / Autoscaling', $._config.tags + ['kubernetes-core']) +
           dashboard.link.link.options.withTargetBlank(true),
         ]
       ) +
