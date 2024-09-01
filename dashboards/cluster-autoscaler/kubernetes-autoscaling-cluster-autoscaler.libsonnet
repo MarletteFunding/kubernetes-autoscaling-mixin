@@ -32,7 +32,7 @@ local tsCustom = tsFieldConfig.defaults.custom;
 local tsLegend = tsOptions.legend;
 
 {
-  grafanaDashboards+:: {
+  grafanaDashboards+:: std.prune({
 
     local datasourceVariable =
       datasource.new(
@@ -509,5 +509,5 @@ local tsLegend = tsOptions.legend;
       if $._config.annotation.enabled then
         dashboard.withAnnotations($._config.customAnnotation)
       else {},
-  },
+  }),
 }

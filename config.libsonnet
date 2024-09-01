@@ -17,7 +17,7 @@ local annotation = g.dashboard.annotation;
     hpaDashboardUid: 'kubernetes-autoscaling-mixin-hpa-jkwq',
     vpDashboardUid: 'kubernetes-autoscaling-mixin-vp-jkwq',
     clusterAutoscalerDashboardUid: 'kubernetes-autoscaling-mixin-ca-jkwq',
-    karpetnerDashboardUid: 'kubernetes-autoscaling-mixin-karpetner-jkwq',
+    karpenterDashboardUid: 'kubernetes-autoscaling-mixin-karp-jkwq',
 
     clusterAutoscaler: {
       enabled: false,
