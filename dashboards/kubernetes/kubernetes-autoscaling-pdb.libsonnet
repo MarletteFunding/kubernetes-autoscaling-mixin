@@ -58,7 +58,7 @@ local tbOverride = tbStandardOptions.override;
     local namespaceVariable =
       query.new(
         'namespace',
-        'label_values(kube_poddisruptionbudget_status_current_healthy{job="$job"}, namespace)'
+        'label_values(kube_poddisruptionbudget_status_current_healthy{job=~"$job"}, namespace)'
       ) +
       query.withDatasourceFromVariable(datasourceVariable) +
       query.withSort(1) +
@@ -70,7 +70,7 @@ local tbOverride = tbStandardOptions.override;
     local pdbVariable =
       query.new(
         'pdb',
-        'label_values(kube_poddisruptionbudget_status_current_healthy{job="$job", namespace=~"$namespace"}, poddisruptionbudget)'
+        'label_values(kube_poddisruptionbudget_status_current_healthy{job=~"$job", namespace=~"$namespace"}, poddisruptionbudget)'
       ) +
       query.withDatasourceFromVariable(datasourceVariable) +
       query.withSort(1) +
@@ -89,7 +89,7 @@ local tbOverride = tbStandardOptions.override;
       round(
         sum(
           kube_poddisruptionbudget_status_pod_disruptions_allowed{
-            job="$job",
+            job=~"$job",
             namespace=~"$namespace",
             poddisruptionbudget=~"$pdb"
           }
@@ -120,7 +120,7 @@ local tbOverride = tbStandardOptions.override;
       round(
         sum(
           kube_poddisruptionbudget_status_desired_healthy{
-            job="$job",
+            job=~"$job",
             namespace=~"$namespace",
             poddisruptionbudget=~"$pdb"
           }
@@ -151,7 +151,7 @@ local tbOverride = tbStandardOptions.override;
       round(
         sum(
           kube_poddisruptionbudget_status_current_healthy{
-            job="$job",
+            job=~"$job",
             namespace=~"$namespace",
             poddisruptionbudget=~"$pdb"
           }
@@ -182,7 +182,7 @@ local tbOverride = tbStandardOptions.override;
       round(
         sum(
           kube_poddisruptionbudget_status_expected_pods{
-            job="$job",
+            job=~"$job",
             namespace=~"$namespace",
             poddisruptionbudget=~"$pdb"
           }
@@ -282,7 +282,7 @@ local tbOverride = tbStandardOptions.override;
       round(
         sum(
           kube_poddisruptionbudget_status_pod_disruptions_allowed{
-            job="$job",
+            job=~"$job",
             namespace=~"$namespace"
           }
         ) by (job, namespace, poddisruptionbudget)

@@ -43,7 +43,7 @@ local tsLegend = tsOptions.legend;
     local nodePoolVariable =
       query.new(
         'nodepool',
-        'label_values(karpenter_nodepools_allowed_disruptions{job="$job"}, nodepool)'
+        'label_values(karpenter_nodepools_allowed_disruptions{job=~"$job"}, nodepool)'
       ) +
       query.withDatasourceFromVariable(datasourceVariable) +
       query.withSort(1) +
@@ -64,7 +64,7 @@ local tsLegend = tsOptions.legend;
         sum(
           increase(
             karpenter_nodes_created_total{
-              job="$job",
+              job=~"$job",
               nodepool=~"$nodepool"
             }[$__rate_interval]
           )
@@ -133,7 +133,7 @@ local tsLegend = tsOptions.legend;
         sum(
           increase(
             karpenter_voluntary_disruption_decisions_total{
-              job="$job",
+              job=~"$job",
             }[$__rate_interval]
           )
         ) by (decision, reason, consolidation_type)
@@ -172,7 +172,7 @@ local tsLegend = tsOptions.legend;
         sum(
           increase(
             karpenter_voluntary_disruption_eligible_nodes{
-              job="$job",
+              job=~"$job",
             }[$__rate_interval]
           )
         ) by (reason)
@@ -212,7 +212,7 @@ local tsLegend = tsOptions.legend;
         sum(
           increase(
             karpenter_nodeclaims_disrupted_total{
-              job="$job",
+              job=~"$job",
               nodepool=~"$nodepool"
             }[$__rate_interval]
           )
@@ -251,7 +251,7 @@ local tsLegend = tsOptions.legend;
       round(
         sum(
           karpenter_pods_state{
-            job="$job"
+            job=~"$job"
           }
         ) by (phase)
       )

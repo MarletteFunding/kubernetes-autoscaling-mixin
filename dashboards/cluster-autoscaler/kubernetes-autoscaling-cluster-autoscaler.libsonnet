@@ -62,7 +62,7 @@ local tsLegend = tsOptions.legend;
       round(
         sum(
           cluster_autoscaler_nodes_count{
-            job="$job"
+            job=~"$job"
           }
         )
       )
@@ -91,7 +91,7 @@ local tsLegend = tsOptions.legend;
       round(
         sum(
           cluster_autoscaler_max_nodes_count{
-            job="$job"
+            job=~"$job"
           }
         )
       )
@@ -120,7 +120,7 @@ local tsLegend = tsOptions.legend;
       round(
         sum(
           cluster_autoscaler_node_groups_count{
-            job="$job"
+            job=~"$job"
           }
         )
       )
@@ -149,12 +149,12 @@ local tsLegend = tsOptions.legend;
       round(
         sum(
           cluster_autoscaler_nodes_count{
-            job="$job"
+            job=~"$job"
           }
         ) /
         sum(
           cluster_autoscaler_nodes_count{
-            job="$job",
+            job=~"$job",
             state="ready"
           }
         ) * 100
@@ -184,7 +184,7 @@ local tsLegend = tsOptions.legend;
       round(
         sum(
           cluster_autoscaler_cluster_safe_to_autoscale{
-            job="$job"
+            job=~"$job"
           }
         )
       )
@@ -222,7 +222,7 @@ local tsLegend = tsOptions.legend;
       round(
         sum(
           cluster_autoscaler_unschedulable_pods_count{
-            job="$job"
+            job=~"$job"
           }
         )
       )
@@ -244,7 +244,7 @@ local tsLegend = tsOptions.legend;
     local caLastScaleDownQuery = |||
       time() - sum(
         cluster_autoscaler_last_activity{
-          job="$job",
+          job=~"$job",
           activity="scaleDown"
         }
       )
@@ -270,7 +270,7 @@ local tsLegend = tsOptions.legend;
     local caLastScaleUpQuery = |||
       time() - sum(
         cluster_autoscaler_last_activity{
-          job="$job",
+          job=~"$job",
           activity="scaleUp"
         }
       )
@@ -298,7 +298,7 @@ local tsLegend = tsOptions.legend;
         sum(
           increase(
             cluster_autoscaler_unschedulable_pods_count{
-              job="$job"
+              job=~"$job"
             }[2m]
           )
         ) by (type)
@@ -310,7 +310,7 @@ local tsLegend = tsOptions.legend;
         sum(
           increase(
             cluster_autoscaler_evicted_pods_total{
-              job="$job"
+              job=~"$job"
             }[2m]
           )
         )
@@ -350,7 +350,7 @@ local tsLegend = tsOptions.legend;
       round(
         sum(
           cluster_autoscaler_nodes_count{
-            job="$job"
+            job=~"$job"
           }
         ) by (state)
       )
@@ -382,7 +382,7 @@ local tsLegend = tsOptions.legend;
       round(
         sum(
           cluster_autoscaler_unneeded_nodes_count{
-            job="$job"
+            job=~"$job"
           }
         )
       )
@@ -393,7 +393,7 @@ local tsLegend = tsOptions.legend;
         sum(
           increase(
             cluster_autoscaler_scaled_up_nodes_total{
-              job="$job"
+              job=~"$job"
             }[2m]
           )
         )

@@ -85,7 +85,7 @@
                   "type": "prometheus",
                   "uid": "$datasource"
                },
-               "expr": "sum(\n  karpenter_cluster_state_synced{\n    job=\"$job\",\n  }\n) by (job)\n"
+               "expr": "sum(\n  karpenter_cluster_state_synced{\n    job=~\"$job\",\n  }\n) by (job)\n"
             }
          ],
          "title": "Cluster State Synced",
@@ -134,7 +134,7 @@
                   "type": "prometheus",
                   "uid": "$datasource"
                },
-               "expr": "sum(\n  karpenter_cluster_state_node_count{\n    job=\"$job\",\n  }\n) by (job)\n"
+               "expr": "sum(\n  karpenter_cluster_state_node_count{\n    job=~\"$job\",\n  }\n) by (job)\n"
             }
          ],
          "title": "Cluster State Node Count",
@@ -185,7 +185,7 @@
                   "type": "prometheus",
                   "uid": "$datasource"
                },
-               "expr": "round(\n  sum(\n    increase(\n      karpenter_cloudprovider_errors_total{\n        job=\"$job\"\n      }[$__rate_interval]\n    )\n  ) by (job, provider, controller, method)\n)\n",
+               "expr": "round(\n  sum(\n    increase(\n      karpenter_cloudprovider_errors_total{\n        job=~\"$job\"\n      }[$__rate_interval]\n    )\n  ) by (job, provider, controller, method)\n)\n",
                "interval": "1m",
                "legendFormat": "{{ provider }} - {{ controller }} - {{ method }}"
             }
@@ -390,7 +390,7 @@
                   "type": "prometheus",
                   "uid": "$datasource"
                },
-               "expr": "sum(\n  increase(\n    karpenter_interruption_received_messages_total{\n      job=\"$job\"\n    }[$__rate_interval]\n  )\n) by (job, message_type)\n",
+               "expr": "sum(\n  increase(\n    karpenter_interruption_received_messages_total{\n      job=~\"$job\"\n    }[$__rate_interval]\n  )\n) by (job, message_type)\n",
                "legendFormat": "{{ message_type }}"
             }
          ],
@@ -441,7 +441,7 @@
                   "type": "prometheus",
                   "uid": "$datasource"
                },
-               "expr": "sum(\n  increase(\n    karpenter_interruption_deleted_messages_total{\n      job=\"$job\"\n    }[$__rate_interval]\n  )\n) by (job)\n",
+               "expr": "sum(\n  increase(\n    karpenter_interruption_deleted_messages_total{\n      job=~\"$job\"\n    }[$__rate_interval]\n  )\n) by (job)\n",
                "legendFormat": "Deleted Messages"
             }
          ],
@@ -573,7 +573,7 @@
                   "type": "prometheus",
                   "uid": "$datasource"
                },
-               "expr": "sum(\n  karpenter_workqueue_depth{\n    job=\"$job\"\n  }\n) by (job)\n",
+               "expr": "sum(\n  karpenter_workqueue_depth{\n    job=~\"$job\"\n  }\n) by (job)\n",
                "legendFormat": "Queue Depth"
             }
          ],
@@ -776,7 +776,7 @@
                   "type": "prometheus",
                   "uid": "$datasource"
                },
-               "expr": "sum(\n  rate(\n    controller_runtime_reconcile_total{\n      job=\"$job\"\n    }[$__rate_interval]\n  )\n) by (job, controller) > 0\n",
+               "expr": "sum(\n  rate(\n    controller_runtime_reconcile_total{\n      job=~\"$job\"\n    }[$__rate_interval]\n  )\n) by (job, controller) > 0\n",
                "legendFormat": "{{ controller }}"
             }
          ],
@@ -820,7 +820,7 @@
             "label": "Node Pool",
             "multi": true,
             "name": "nodepool",
-            "query": "label_values(karpenter_nodepools_allowed_disruptions{job=\"$job\"}, nodepool)",
+            "query": "label_values(karpenter_nodepools_allowed_disruptions{job=~\"$job\"}, nodepool)",
             "refresh": 2,
             "sort": 1,
             "type": "query"

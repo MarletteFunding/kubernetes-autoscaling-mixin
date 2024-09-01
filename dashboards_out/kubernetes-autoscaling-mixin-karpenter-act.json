@@ -71,7 +71,7 @@
                   "type": "prometheus",
                   "uid": "$datasource"
                },
-               "expr": "round(\n  sum(\n    increase(\n      karpenter_nodes_created_total{\n        job=\"$job\",\n        nodepool=~\"$nodepool\"\n      }[$__rate_interval]\n    )\n  ) by (nodepool)\n)\n",
+               "expr": "round(\n  sum(\n    increase(\n      karpenter_nodes_created_total{\n        job=~\"$job\",\n        nodepool=~\"$nodepool\"\n      }[$__rate_interval]\n    )\n  ) by (nodepool)\n)\n",
                "interval": "1m",
                "legendFormat": "{{ nodepool }}"
             }
@@ -123,7 +123,7 @@
                   "type": "prometheus",
                   "uid": "$datasource"
                },
-               "expr": "round(\n  sum(\n    increase(\n      karpenter_nodes_terminated_total{\n        job=\"$job\",\n        nodepool=~\"$nodepool\"\n      }[$__rate_interval]\n    )\n  ) by (nodepool)\n)\n",
+               "expr": "round(\n  sum(\n    increase(\n      karpenter_nodes_terminated_total{\n        job=~\"$job\",\n        nodepool=~\"$nodepool\"\n      }[$__rate_interval]\n    )\n  ) by (nodepool)\n)\n",
                "interval": "1m",
                "legendFormat": "{{ nodepool }}"
             }
@@ -176,7 +176,7 @@
                   "type": "prometheus",
                   "uid": "$datasource"
                },
-               "expr": "round(\n  sum(\n    increase(\n      karpenter_voluntary_disruption_decisions_total{\n        job=\"$job\",\n      }[$__rate_interval]\n    )\n  ) by (decision, reason, consolidation_type)\n)\n",
+               "expr": "round(\n  sum(\n    increase(\n      karpenter_voluntary_disruption_decisions_total{\n        job=~\"$job\",\n      }[$__rate_interval]\n    )\n  ) by (decision, reason, consolidation_type)\n)\n",
                "interval": "1m",
                "legendFormat": "{{ decision }} - {{ reason }} - {{ consolidation_type }}"
             }
@@ -229,7 +229,7 @@
                   "type": "prometheus",
                   "uid": "$datasource"
                },
-               "expr": "round(\n  sum(\n    increase(\n      karpenter_voluntary_disruption_eligible_nodes{\n        job=\"$job\",\n      }[$__rate_interval]\n    )\n  ) by (reason)\n)\n",
+               "expr": "round(\n  sum(\n    increase(\n      karpenter_voluntary_disruption_eligible_nodes{\n        job=~\"$job\",\n      }[$__rate_interval]\n    )\n  ) by (reason)\n)\n",
                "interval": "1m",
                "legendFormat": "{{ reason }}"
             }
@@ -282,7 +282,7 @@
                   "type": "prometheus",
                   "uid": "$datasource"
                },
-               "expr": "round(\n  sum(\n    increase(\n      karpenter_nodeclaims_disrupted_total{\n        job=\"$job\",\n        nodepool=~\"$nodepool\"\n      }[$__rate_interval]\n    )\n  ) by (nodepool, capacity_type, reason)\n)\n",
+               "expr": "round(\n  sum(\n    increase(\n      karpenter_nodeclaims_disrupted_total{\n        job=~\"$job\",\n        nodepool=~\"$nodepool\"\n      }[$__rate_interval]\n    )\n  ) by (nodepool, capacity_type, reason)\n)\n",
                "interval": "1m",
                "legendFormat": "{{ nodepool }} - {{ capacity_type }} - {{ reason }}"
             }
@@ -347,7 +347,7 @@
                   "type": "prometheus",
                   "uid": "$datasource"
                },
-               "expr": "round(\n  sum(\n    karpenter_pods_state{\n      job=\"$job\"\n    }\n  ) by (phase)\n)\n",
+               "expr": "round(\n  sum(\n    karpenter_pods_state{\n      job=~\"$job\"\n    }\n  ) by (phase)\n)\n",
                "interval": "1m",
                "legendFormat": "{{ phase }}"
             }
@@ -463,7 +463,7 @@
             "label": "Node Pool",
             "multi": true,
             "name": "nodepool",
-            "query": "label_values(karpenter_nodepools_allowed_disruptions{job=\"$job\"}, nodepool)",
+            "query": "label_values(karpenter_nodepools_allowed_disruptions{job=~\"$job\"}, nodepool)",
             "refresh": 2,
             "sort": 1,
             "type": "query"

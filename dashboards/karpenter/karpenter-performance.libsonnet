@@ -49,7 +49,7 @@ local tsLegend = tsOptions.legend;
     local nodePoolVariable =
       query.new(
         'nodepool',
-        'label_values(karpenter_nodepools_allowed_disruptions{job="$job"}, nodepool)'
+        'label_values(karpenter_nodepools_allowed_disruptions{job=~"$job"}, nodepool)'
       ) +
       query.withDatasourceFromVariable(datasourceVariable) +
       query.withSort(1) +
@@ -68,7 +68,7 @@ local tsLegend = tsOptions.legend;
     local karpenterClusterStateSyncedQuery = |||
       sum(
         karpenter_cluster_state_synced{
-          job="$job",
+          job=~"$job",
         }
       ) by (job)
     |||,
@@ -105,7 +105,7 @@ local tsLegend = tsOptions.legend;
     local karpenterClusterStateNodeCountQuery = |||
       sum(
         karpenter_cluster_state_node_count{
-          job="$job",
+          job=~"$job",
         }
       ) by (job)
     |||,
@@ -134,7 +134,7 @@ local tsLegend = tsOptions.legend;
         sum(
           increase(
             karpenter_cloudprovider_errors_total{
-              job="$job"
+              job=~"$job"
             }[$__rate_interval]
           )
         ) by (job, provider, controller, method)
@@ -237,7 +237,7 @@ local tsLegend = tsOptions.legend;
       sum(
         increase(
           karpenter_interruption_received_messages_total{
-            job="$job"
+            job=~"$job"
           }[$__rate_interval]
         )
       ) by (job, message_type)
@@ -274,7 +274,7 @@ local tsLegend = tsOptions.legend;
       sum(
         increase(
           karpenter_interruption_deleted_messages_total{
-            job="$job"
+            job=~"$job"
           }[$__rate_interval]
         )
       ) by (job)
@@ -407,7 +407,7 @@ local tsLegend = tsOptions.legend;
     local karpenterWorkQueueDepthQuery = |||
       sum(
         karpenter_workqueue_depth{
-          job="$job"
+          job=~"$job"
         }
       ) by (job)
     |||,
@@ -552,7 +552,7 @@ local tsLegend = tsOptions.legend;
       sum(
         rate(
           controller_runtime_reconcile_total{
-            job="$job"
+            job=~"$job"
           }[$__rate_interval]
         )
       ) by (job, controller) > 0

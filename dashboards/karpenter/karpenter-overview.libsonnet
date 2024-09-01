@@ -53,7 +53,7 @@ local pieQueryOptions = pieChartPanel.queryOptions;
     local nodePoolVariable =
       query.new(
         'nodepool',
-        'label_values(karpenter_nodepools_allowed_disruptions{job="$job"}, nodepool)'
+        'label_values(karpenter_nodepools_allowed_disruptions{job=~"$job"}, nodepool)'
       ) +
       query.withDatasourceFromVariable(datasourceVariable) +
       query.withSort(1) +
@@ -73,7 +73,7 @@ local pieQueryOptions = pieChartPanel.queryOptions;
       count(
         count(
           karpenter_nodepools_allowed_disruptions{
-            job="$job",
+            job=~"$job",
           }
         ) by (nodepool)
       )
@@ -102,7 +102,7 @@ local pieQueryOptions = pieChartPanel.queryOptions;
       count(
         count(
           karpenter_nodes_allocatable{
-            job="$job",
+            job=~"$job",
             nodepool=~"$nodepool"
           }
         ) by (node_name)
@@ -131,7 +131,7 @@ local pieQueryOptions = pieChartPanel.queryOptions;
     local karpenterNodePoolCpuUsageQuery = |||
       sum(
         karpenter_nodepools_usage{
-          job="$job",
+          job=~"$job",
           nodepool=~"$nodepool",
           resource_type="cpu"
         }
@@ -262,7 +262,7 @@ local pieQueryOptions = pieChartPanel.queryOptions;
       count by (capacity_type) (
         count by (node_name, capacity_type) (
           karpenter_nodes_allocatable{
-            job="$job",
+            job=~"$job",
             nodepool=~"$nodepool"
           }
         )
@@ -292,7 +292,7 @@ local pieQueryOptions = pieChartPanel.queryOptions;
       count by (region) (
         count by (node_name, region) (
           karpenter_nodes_allocatable{
-            job="$job",
+            job=~"$job",
             nodepool=~"$nodepool"
           }
         )
@@ -322,7 +322,7 @@ local pieQueryOptions = pieChartPanel.queryOptions;
       count by (zone) (
         count by (node_name, zone) (
           karpenter_nodes_allocatable{
-            job="$job",
+            job=~"$job",
             nodepool=~"$nodepool"
           }
         )
@@ -352,7 +352,7 @@ local pieQueryOptions = pieChartPanel.queryOptions;
       count by (arch) (
         count by (node_name, arch) (
           karpenter_nodes_allocatable{
-            job="$job",
+            job=~"$job",
             nodepool=~"$nodepool"
           }
         )
@@ -382,7 +382,7 @@ local pieQueryOptions = pieChartPanel.queryOptions;
       count by (os) (
         count by (node_name, os) (
           karpenter_nodes_allocatable{
-            job="$job",
+            job=~"$job",
             nodepool=~"$nodepool"
           }
         )
@@ -412,7 +412,7 @@ local pieQueryOptions = pieChartPanel.queryOptions;
       count by (instance_type) (
         count by (node_name, instance_type) (
           karpenter_nodes_allocatable{
-            job="$job",
+            job=~"$job",
             nodepool=~"$nodepool"
           }
         )
@@ -423,7 +423,7 @@ local pieQueryOptions = pieChartPanel.queryOptions;
       count by (nodepool) (
         count by (node_name, nodepool) (
           karpenter_nodes_allocatable{
-            job="$job",
+            job=~"$job",
             nodepool=~"$nodepool"
           }
         )
@@ -433,12 +433,14 @@ local pieQueryOptions = pieChartPanel.queryOptions;
     local karpenterPodCpuRequestsQuery = |||
       sum(
         karpenter_nodes_total_pod_requests{
+          job=~"$job",
           resource_type="cpu",
           nodepool=~"$nodepool"
         }
       ) +
       sum(
         karpenter_nodes_total_daemon_requests{
+          job=~"$job",
           resource_type="cpu",
           nodepool=~"$nodepool"
         }
@@ -530,7 +532,7 @@ local pieQueryOptions = pieChartPanel.queryOptions;
     local karpenterPodsByNodePoolQuery = |||
       sum(
           karpenter_pods_state{
-            job="$job",
+            job=~"$job",
             nodepool=~"$nodepool"
           }
       ) by (nodepool)
@@ -600,7 +602,7 @@ local pieQueryOptions = pieChartPanel.queryOptions;
     local karpenterTCpuNodePoolUsageQuery = |||
       sum(
         karpenter_nodepools_usage{
-          job="$job",
+          job=~"$job",
           nodepool=~"$nodepool",
           resource_type="cpu"
         }
@@ -796,7 +798,7 @@ local pieQueryOptions = pieChartPanel.queryOptions;
         (
           sum(
             karpenter_nodes_total_pod_requests{
-              job="$job",
+              job=~"$job",
               nodepool=~"$nodepool",
               resource_type="cpu"
             }
@@ -804,7 +806,7 @@ local pieQueryOptions = pieChartPanel.queryOptions;
           +
           sum(
             karpenter_nodes_total_daemon_requests{
-              job="$job",
+              job=~"$job",
               nodepool=~"$nodepool",
               resource_type="cpu"
             }
@@ -812,7 +814,7 @@ local pieQueryOptions = pieChartPanel.queryOptions;
         ) /
         sum(
           karpenter_nodes_allocatable{
-            job="$job",
+            job=~"$job",
             nodepool=~"$nodepool",
             resource_type="cpu"
           }

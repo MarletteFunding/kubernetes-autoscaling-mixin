@@ -58,7 +58,7 @@ local tbOverride = tbStandardOptions.override;
     local namespaceVariable =
       query.new(
         'namespace',
-        'label_values(kube_customresource_verticalpodautoscaler_labels{job="$job"}, namespace)'
+        'label_values(kube_customresource_verticalpodautoscaler_labels{job=~"$job"}, namespace)'
       ) +
       query.withDatasourceFromVariable(datasourceVariable) +
       query.withSort(1) +
@@ -70,7 +70,7 @@ local tbOverride = tbStandardOptions.override;
     local vpaVariable =
       query.new(
         'vpa',
-        'label_values(kube_customresource_verticalpodautoscaler_labels{job="$job", namespace=~"$namespace"}, verticalpodautoscaler)'
+        'label_values(kube_customresource_verticalpodautoscaler_labels{job=~"$job", namespace=~"$namespace"}, verticalpodautoscaler)'
       ) +
       query.withDatasourceFromVariable(datasourceVariable) +
       query.withSort(1) +
@@ -81,7 +81,7 @@ local tbOverride = tbStandardOptions.override;
     local containerVariable =
       query.new(
         'container',
-        'label_values(kube_customresource_verticalpodautoscaler_status_recommendation_containerrecommendations_target{job="$job", namespace=~"$namespace", verticalpodautoscaler=~"$vpa"}, container)'
+        'label_values(kube_customresource_verticalpodautoscaler_status_recommendation_containerrecommendations_target{job=~"$job", namespace=~"$namespace", verticalpodautoscaler=~"$vpa"}, container)'
       ) +
       query.withDatasourceFromVariable(datasourceVariable) +
       query.withSort(1) +
@@ -102,9 +102,9 @@ local tbOverride = tbStandardOptions.override;
     local vpaCpuRecommendationTargetQuery = |||
       sum(
         kube_customresource_verticalpodautoscaler_status_recommendation_containerrecommendations_target{
-          job="$job",
+          job=~"$job",
           namespace=~"$namespace",
-          resource="cpu",
+          resource="cpu"
         }
       ) by (job, namespace, verticalpodautoscaler, container, resource)
     |||,
@@ -145,7 +145,7 @@ local tbOverride = tbStandardOptions.override;
             vpaCpuRecommendationUpperBoundQuery,
           ) +
           prometheus.withInstant(true) +
-          prometheus.withFormat('table'),
+          prometheus.withFormat('table') +
           prometheus.withLegendFormat(
             'CPU Upper Bound'
           ),
@@ -253,7 +253,7 @@ local tbOverride = tbStandardOptions.override;
             vpaMemoryRecommendationUpperBoundQuery,
           ) +
           prometheus.withInstant(true) +
-          prometheus.withFormat('table'),
+          prometheus.withFormat('table') +
           prometheus.withLegendFormat(
             'Memory Upper Bound'
           ),
@@ -326,7 +326,7 @@ local tbOverride = tbStandardOptions.override;
     local vpaCpuRecommendationTargetOverTimeQuery = |||
       sum(
         kube_customresource_verticalpodautoscaler_status_recommendation_containerrecommendations_target{
-          job="$job",
+          job=~"$job",
           namespace=~"$namespace",
           resource="cpu",
           verticalpodautoscaler="$vpa",
@@ -339,6 +339,7 @@ local tbOverride = tbStandardOptions.override;
     local vpaCpuUsageOverTimeQuery = |||
       sum(
         node_namespace_pod_container:container_cpu_usage_seconds_total:sum_irate{
+          job=~"$job",
           namespace="$namespace",
           pod=~"$vpa-(.+)",
           container="$container"
@@ -348,10 +349,11 @@ local tbOverride = tbStandardOptions.override;
     local vpaCpuRequestOverTimeQuery = |||
       sum(
         kube_pod_container_resource_requests{
+          job=~"$job",
           namespace="$namespace",
           pod=~"$vpa-(.+)",
-          container="$container",
           resource="cpu",
+          container="$container"
         }
       ) by (container)
     |||,
@@ -424,6 +426,7 @@ local tbOverride = tbStandardOptions.override;
     local vpaMemoryUsageOverTimeQuery = |||
       sum(
         container_memory_working_set_bytes{
+          job=~"$job",
           namespace="$namespace",
           pod=~"$vpa(.+)",
           container="$container"
