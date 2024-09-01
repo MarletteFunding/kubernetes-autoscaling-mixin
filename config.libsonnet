@@ -11,7 +11,7 @@ local annotation = g.dashboard.annotation;
 
     kubernetesStateMetricsSelector: 'job=~"kube-state-metrics"',
     clusterAutoscalerSelector: 'job=~"cluster-autoscaler"',
-    karpernterSelector: 'job=~"karpenter"',
+    karpenterSelector: 'job=~"karpenter"',
 
     grafanaUrl: 'https://grafana.com',
 
@@ -35,8 +35,7 @@ local annotation = g.dashboard.annotation;
       enabled: true,
     },
 
-    overviewDashboardUrl: '%s/d/%s/kubernetes-autoscaling-mixin-overview' % [self.grafanaUrl, self.overviewDashboardUid],
-    requestsByViewDashboardUrl: '%s/d/%s/kubernetes-autoscaling-mixin-requests-by-view' % [self.grafanaUrl, self.requestsByViewDashboardUid],
+    karpenterPerformanceDashboardUrl: '%s/d/%s/kubernetes-autoscaling-karpenter-performance' % [self.grafanaUrl, self.karpenterPerformanceDashboardUid],
 
     tags: ['kubernetes', 'autoscaling', 'kubernetes-autoscaling-mixin'],
 

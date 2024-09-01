@@ -1,90 +1,19 @@
 "groups":
-- "name": "kubernetes-autoscaling-mixin"
+- "name": "karpenter"
   "rules":
-  - "alert": "Kubernetes / AutoscalingMigrationsUnapplied"
+  - "alert": "KarpenterCloudProviderErrors"
     "annotations":
-      "dashboard_url": "https://grafana.com/d/kubernetes-autoscaling-mixin-overview-jkwq/kubernetes-autoscaling-mixin-overview?var-namespace={{ $labels.namespace }}&var-job={{ $labels.job }}"
-      "description": "The job {{ $labels.job }} has unapplied migrations."
-      "summary": "Kubernetes / Autoscaling has unapplied migrations."
+      "dashboard_url": "https://grafana.com/d/kubernetes-autoscaling-mixin-kperf-jkwq/kubernetes-autoscaling-karpenter-performance"
+      "description": "The Karpenter provider {{ $labels.provider }} with the controller {{ $labels.controller }} has errors with the method {{ $labels.method }}."
+      "summary": "Karpenter has Cloud Provider Errors."
     "expr": |
       sum(
-        kubernetes-autoscaling-mixin_migrations_unapplied_total{
-          job=~"kubernetes-autoscaling-mixin"
-        }
-      ) by (namespace, job)
-      > 0
-    "for": "15m"
-    "labels":
-      "severity": "warning"
-  - "alert": "Kubernetes / AutoscalingDatabaseException"
-    "annotations":
-      "dashboard_url": "https://grafana.com/d/kubernetes-autoscaling-mixin-overview-jkwq/kubernetes-autoscaling-mixin-overview?var-namespace={{ $labels.namespace }}&var-job={{ $labels.job }}"
-      "description": "The job {{ $labels.job }} has hit the database exception {{ $labels.type }}."
-      "summary": "Kubernetes / Autoscaling database exception."
-    "expr": |
-      sum (
         increase(
-          kubernetes-autoscaling-mixin_db_errors_total{
-            job=~"kubernetes-autoscaling-mixin"
-          }[10m]
-        )
-      ) by (type, namespace, job)
-      > 0
-    "labels":
-      "severity": "info"
-  - "alert": "Kubernetes / AutoscalingHighHttp4xxErrorRate"
-    "annotations":
-      "dashboard_url": "https://grafana.com/d/kubernetes-autoscaling-mixin-requests-by-view-jkwq/kubernetes-autoscaling-mixin-requests-by-view?var-namespace={{ $labels.namespace }}&var-job={{ $labels.job }}&var-view={{ $labels.view }}"
-      "description": "More than 5% HTTP requests with status 4xx for {{ $labels.job }}/{{ $labels.view }} the past 5m."
-      "summary": "Kubernetes / Autoscaling high HTTP 4xx error rate."
-    "expr": |
-      sum(
-        rate(
-          kubernetes-autoscaling-mixin_http_responses_total_by_status_view_method_total{
-            job=~"kubernetes-autoscaling-mixin",
-            status=~"^4.*",
-            view!~"<unnamed view>|health_check:health_check_home|prometheus-kubernetes-autoscaling-mixin-metrics"
+          karpenter_cloudprovider_errors_total{
+            job=~"karpenter"
           }[5m]
         )
-      )  by (namespace, job, view)
-      /
-      sum(
-        rate(
-          kubernetes-autoscaling-mixin_http_responses_total_by_status_view_method_total{
-            job=~"kubernetes-autoscaling-mixin",
-            view!~"<unnamed view>|health_check:health_check_home|prometheus-kubernetes-autoscaling-mixin-metrics"
-          }[5m]
-        )
-      )  by (namespace, job, view)
-      * 100 > 5
-    "for": "1m"
-    "labels":
-      "severity": "warning"
-  - "alert": "Kubernetes / AutoscalingHighHttp5xxErrorRate"
-    "annotations":
-      "dashboard_url": "https://grafana.com/d/kubernetes-autoscaling-mixin-requests-by-view-jkwq/kubernetes-autoscaling-mixin-requests-by-view?var-namespace={{ $labels.namespace }}&var-job={{ $labels.job }}&var-view={{ $labels.view }}"
-      "description": "More than 5% HTTP requests with status 5xx for {{ $labels.job }}/{{ $labels.view }} the past 5m."
-      "summary": "Kubernetes / Autoscaling high HTTP 5xx error rate."
-    "expr": |
-      sum(
-        rate(
-          kubernetes-autoscaling-mixin_http_responses_total_by_status_view_method_total{
-            job=~"kubernetes-autoscaling-mixin",
-            status=~"^5.*",
-            view!~"<unnamed view>|health_check:health_check_home|prometheus-kubernetes-autoscaling-mixin-metrics"
-          }[5m]
-        )
-      )  by (namespace, job, view)
-      /
-      sum(
-        rate(
-          kubernetes-autoscaling-mixin_http_responses_total_by_status_view_method_total{
-            job=~"kubernetes-autoscaling-mixin",
-            view!~"<unnamed view>|health_check:health_check_home|prometheus-kubernetes-autoscaling-mixin-metrics"
-          }[5m]
-        )
-      )  by (namespace, job, view)
-      * 100 > 5
-    "for": "1m"
+      ) by (namespace, job, provider, controller, method) > 0
+    "for": "5m"
     "labels":
       "severity": "warning"
