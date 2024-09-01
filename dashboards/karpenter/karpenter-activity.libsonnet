@@ -9,21 +9,7 @@ local datasource = variable.datasource;
 local query = variable.query;
 local prometheus = g.query.prometheus;
 
-local statPanel = g.panel.stat;
-local gaugePanel = g.panel.gauge;
 local timeSeriesPanel = g.panel.timeSeries;
-local tablePanel = g.panel.table;
-local pieChartPanel = g.panel.pieChart;
-
-// Stat
-local stOptions = statPanel.options;
-local stStandardOptions = statPanel.standardOptions;
-local stQueryOptions = statPanel.queryOptions;
-
-// Gauge
-local gaOptions = gaugePanel.options;
-local gaStandardOptions = gaugePanel.standardOptions;
-local gaQueryOptions = gaugePanel.queryOptions;
 
 // Timeseries
 local tsOptions = timeSeriesPanel.options;
@@ -32,18 +18,6 @@ local tsQueryOptions = timeSeriesPanel.queryOptions;
 local tsFieldConfig = timeSeriesPanel.fieldConfig;
 local tsCustom = tsFieldConfig.defaults.custom;
 local tsLegend = tsOptions.legend;
-
-// Table
-local tbOptions = tablePanel.options;
-local tbStandardOptions = tablePanel.standardOptions;
-local tbQueryOptions = tablePanel.queryOptions;
-local tbFieldConfig = tablePanel.fieldConfig;
-local tbOverride = tbStandardOptions.override;
-
-// Pie Chart
-local pieOptions = pieChartPanel.options;
-local pieStandardOptions = pieChartPanel.standardOptions;
-local pieQueryOptions = pieChartPanel.queryOptions;
 
 {
   grafanaDashboards+:: std.prune({
