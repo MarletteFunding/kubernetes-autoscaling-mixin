@@ -375,6 +375,7 @@ local tbOverride = tbStandardOptions.override;
           ]),
         ),
       ]),
+
     local pdbNamespaceSummaryRow =
       row.new(
         title='$namespace Namespace Summary',
