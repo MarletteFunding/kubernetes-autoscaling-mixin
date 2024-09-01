@@ -87,7 +87,7 @@ local pieQueryOptions = pieChartPanel.queryOptions;
 
     local karpenterNodePoolsQuery = |||
       count(
-        count (
+        count(
           karpenter_nodepools_allowed_disruptions{
             job="$job",
           }
@@ -627,6 +627,9 @@ local pieQueryOptions = pieChartPanel.queryOptions;
     local karpenterTPodsByNodePoolUsageQuery = std.strReplace(karpenterTCpuNodePoolUsageQuery, 'cpu', 'pods'),
     local karpenterTEphemeralStorageByNodePoolUsageQuery = std.strReplace(karpenterTCpuNodePoolUsageQuery, 'cpu', 'ephemeral_storage'),
 
+    local karpenterTCpuNodePoolAllocatedQuery = std.strReplace(karpenterTCpuNodePoolUsageQuery, 'nodepools_usage', 'nodes_allocatable'),
+    local karpenterTMemoryNodePoolAllocatedQuery = std.strReplace(karpenterTCpuNodePoolAllocatedQuery, 'cpu', 'memory'),
+
     local karpenterTCpuNodePoolLimitQuery = std.strReplace(karpenterTCpuNodePoolUsageQuery, 'usage', 'limit'),
     local karpenterTMemoryNodePoolLimitQuery = std.strReplace(karpenterTMemoryNodePoolUsageQuery, 'usage', 'limit'),
     local karpenterTNodesByNodePoolLimitQuery = std.strReplace(karpenterTNodesByNodePoolUsageQuery, 'usage', 'limit'),
@@ -652,6 +655,12 @@ local pieQueryOptions = pieChartPanel.queryOptions;
           prometheus.withFormat('table'),
           prometheus.new(
             '$datasource',
+            karpenterTCpuNodePoolAllocatedQuery,
+          ) +
+          prometheus.withInstant(true) +
+          prometheus.withFormat('table'),
+          prometheus.new(
+            '$datasource',
             karpenterTCpuNodePoolLimitQuery,
           ) +
           prometheus.withInstant(true) +
@@ -659,6 +668,12 @@ local pieQueryOptions = pieChartPanel.queryOptions;
           prometheus.new(
             '$datasource',
             karpenterTMemoryNodePoolUsageQuery,
+          ) +
+          prometheus.withInstant(true) +
+          prometheus.withFormat('table'),
+          prometheus.new(
+            '$datasource',
+            karpenterTMemoryNodePoolAllocatedQuery,
           ) +
           prometheus.withInstant(true) +
           prometheus.withFormat('table'),
@@ -719,15 +734,17 @@ local pieQueryOptions = pieChartPanel.queryOptions;
               namespace: 'Namespace',
               nodepool: 'Node Pool',
               'Value #A': 'CPU Usage',
-              'Value #B': 'CPU Limit',
-              'Value #C': 'Memory Usage',
-              'Value #D': 'Memory Limit',
-              'Value #E': 'Nodes Count',
-              'Value #F': 'Nodes Limit',
-              'Value #G': 'Max Pods Count',
-              'Value #H': 'Max Pods Limit',
-              'Value #I': 'Storage Usage',
-              'Value #J': 'Storage Limit',
+              'Value #B': 'CPU Allocated',
+              'Value #C': 'CPU Limit',
+              'Value #D': 'Memory Usage',
+              'Value #E': 'Memory Allocated',
+              'Value #F': 'Memory Limit',
+              'Value #G': 'Nodes Count',
+              'Value #H': 'Nodes Limit',
+              'Value #I': 'Max Pods Count',
+              'Value #J': 'Max Pods Limit',
+              'Value #K': 'Storage Usage',
+              'Value #L': 'Storage Limit',
             },
             indexByName: {
               namespace: 0,
@@ -742,6 +759,8 @@ local pieQueryOptions = pieChartPanel.queryOptions;
               'Value #H': 9,
               'Value #I': 10,
               'Value #J': 11,
+              'Value #K': 12,
+              'Value #L': 13,
             },
             excludeByName: {
               Time: true,
@@ -752,6 +771,10 @@ local pieQueryOptions = pieChartPanel.queryOptions;
       ]) +
       tbStandardOptions.withOverrides([
         tbOverride.byName.new('Memory Usage') +
+        tbOverride.byName.withPropertiesFromOptions(
+          tbStandardOptions.withUnit('bytes')
+        ),
+        tbOverride.byName.new('Memory Allocated') +
         tbOverride.byName.withPropertiesFromOptions(
           tbStandardOptions.withUnit('bytes')
         ),
@@ -940,13 +963,13 @@ local pieQueryOptions = pieChartPanel.queryOptions;
         title='Nodes',
       ),
 
-    'kubernetes-autoscaling-mixin-karpenter.json': if $._config.karpenter.enabled then
+    'kubernetes-autoscaling-mixin-karpenter-over.json': if $._config.karpenter.enabled then
       $._config.bypassDashboardValidation +
       dashboard.new(
         'Kubernetes / Autoscaling / Karpenter / Overview',
       ) +
       dashboard.withDescription('A dashboard that monitors Karpenter and focuses on giving a overview for Karpenter. It is created using the [Kubernetes Autoscaling-mixin](https://github.com/adinhodovic/kubernetes-autoscaling-mixin).') +
-      dashboard.withUid($._config.karpenterDashboardUid) +
+      dashboard.withUid($._config.karpenterOverviewDashboardUid) +
       dashboard.withTags($._config.tags) +
       dashboard.withTimezone('utc') +
       dashboard.withEditable(true) +
