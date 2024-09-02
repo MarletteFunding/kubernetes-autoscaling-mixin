@@ -1,22 +1,28 @@
-# Prometheus Monitoring Mixin for Kubernetes / Autoscaling
+# Prometheus Monitoring Mixin for Kubernetes Autoscaling
 
-A set of Grafana dashboards and Prometheus alerts for Kubernetes / Autoscaling using the metrics from [Kubernetes / Autoscaling Prometheus](https://github.com/korfuri/kubernetes-autoscaling-mixin-prometheus).
+A set of Grafana dashboards and Prometheus alerts for Kubernetes Autoscaling using the metrics from Kube-state-metrics, Karpenter and Cluster-autoscaler.
 
 ## Dashboards
 
-- [Kubernetes / Autoscaling Overview](https://grafana.com/grafana/dashboards/17617-kubernetes-autoscaling-mixin-overview/) - Kubernetes / Autoscaling Overview, a simple overview of the database, cache and requests.
+The mixin provides the following dashboards:
 
-![kubernetes-autoscaling-mixin-overview](images/kubernetes-autoscaling-mixin-overview.png)
-
-- [Kubernetes / Autoscaling Requests Overview](https://grafana.com/grafana/dashboards/17616-kubernetes-autoscaling-mixin-requests-overview/) - Kubernetes / Autoscaling request overview, providing insights of all requests filterable by view and method. Separate graphs for app and admin views, has as well weekly breakdowns for top templates, top exceptions by type, top exceptions by view and top responses by view.
-
-![kubernetes-autoscaling-mixin-requests-overview](images/kubernetes-autoscaling-mixin-requests-overview.png)
-
-- [Kubernetes / Autoscaling Requests by View](https://grafana.com/grafana/dashboards/17613-kubernetes-autoscaling-mixin-requests-by-view/) - Kubernetes / Autoscaling requests by view, a breakdown of requests by view that shows compute expensive metrics as latency buckets alongside requests, responses and status codes.
-
-![kubernetes-autoscaling-mixin-requests-by-view](images/kubernetes-autoscaling-mixin-requests-by-view.png)
+- Kubernetes Autoscaling
+    - Pod Disruption Budgets
+    - Horizontal Pod Autoscalers
+    - Vertical Pod Autoscalers
+- Cluster Autoscaler
+- Karpenter
+    - Overview
+    - Activity
+    - Performance
 
 There are also generated dashboards in the `./dashboards_out` directory.
+
+There are alerts for the following components currently:
+
+- Karpenter
+
+VPA, Karpenter and Cluster Autoscaler are configurable in the `config.libsonnet` file. They can be disabled by setting the `enabled` field to `false`.
 
 ## How to use
 
@@ -60,6 +66,26 @@ The `prometheus_alerts.yaml` file then need to passed
 to your Prometheus server, and the files in `dashboards_out` need to be imported
 into you Grafana server. The exact details will depending on how you deploy your
 monitoring stack.
+
+### Configuration
+
+This mixin has its configuration in the `config.libsonnet` file. You can disable the alerts for VPA, Karpenter and Cluster Autoscaler by setting the `enabled` field to `false`.
+
+```jsonnet
+{
+  _config+:: {
+    vpa+:: {
+      enabled: false,
+    },
+    karpenter+:: {
+      enabled: false,
+    },
+    clusterAutoscaler+:: {
+      enabled: false,
+    },
+  },
+}
+```
 
 ## Alerts
 
