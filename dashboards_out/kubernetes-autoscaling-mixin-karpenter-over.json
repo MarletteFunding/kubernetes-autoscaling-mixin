@@ -1,10 +1,6 @@
 {
-   "__inputs": [
-      "placeholder"
-   ],
-   "__requires": [
-      "placeholder"
-   ],
+   "__inputs": [ ],
+   "__requires": [ ],
    "description": "A dashboard that monitors Karpenter and focuses on giving a overview for Karpenter. It is created using the [Kubernetes Autoscaling-mixin](https://github.com/adinhodovic/kubernetes-autoscaling-mixin).",
    "editable": true,
    "links": [

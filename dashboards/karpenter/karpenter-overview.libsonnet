@@ -1227,5 +1227,8 @@ local pieQueryOptions = pieChartPanel.queryOptions;
       if $._config.annotation.enabled then
         dashboard.withAnnotations($._config.customAnnotation)
       else {},
-  }),
+  }) + if $._config.karpenter.enabled then {
+    'kubernetes-autoscaling-mixin-karpenter-over.json'+: $._config.bypassDashboardValidation,
+  }
+  else {},
 }

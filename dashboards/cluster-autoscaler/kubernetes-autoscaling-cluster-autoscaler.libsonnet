@@ -509,5 +509,7 @@ local tsLegend = tsOptions.legend;
       if $._config.annotation.enabled then
         dashboard.withAnnotations($._config.customAnnotation)
       else {},
-  }),
+  }) + if $._config.clusterAutoscaler.enabled then {
+    'kubernetes-autoscaling-mixin-ca.json'+: $._config.bypassDashboardValidation,
+  } else {},
 }

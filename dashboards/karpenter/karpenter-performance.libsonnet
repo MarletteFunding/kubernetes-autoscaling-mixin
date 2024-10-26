@@ -710,5 +710,7 @@ local tsLegend = tsOptions.legend;
       if $._config.annotation.enabled then
         dashboard.withAnnotations($._config.customAnnotation)
       else {},
-  }),
+  }) + if $._config.karpenter.enabled then {
+    'kubernetes-autoscaling-mixin-karpenter-perf.json'+: $._config.bypassDashboardValidation,
+  } else {},
 }

@@ -1,10 +1,6 @@
 {
-   "__inputs": [
-      "placeholder"
-   ],
-   "__requires": [
-      "placeholder"
-   ],
+   "__inputs": [ ],
+   "__requires": [ ],
    "description": "A dashboard that monitors Kubernetes and focuses on giving a overview for horizontal pod autoscalers. It is created using the [Kubernetes / Autoscaling-mixin](https://github.com/adinhodovic/kubernetes-autoscaling-mixin).",
    "editable": true,
    "links": [

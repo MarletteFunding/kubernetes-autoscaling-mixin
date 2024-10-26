@@ -5,11 +5,9 @@ local annotation = g.dashboard.annotation;
   _config+:: {
     local this = self,
     // Bypasses grafana.com/dashboards validator
-    // TODO(adinhodovic): Remove the placeholders later, they get pruned
-    // if dashboards are enabled/disabled
     bypassDashboardValidation: {
-      __inputs: ['placeholder'],
-      __requires: ['placeholder'],
+      __inputs: [],
+      __requires: [],
     },
 
     kubernetesStateMetricsSelector: 'job=~"kube-state-metrics"',

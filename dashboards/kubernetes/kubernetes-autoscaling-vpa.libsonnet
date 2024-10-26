@@ -632,7 +632,7 @@ local tbOverride = tbStandardOptions.override;
       ) +
       row.withRepeat('container'),
 
-    'kubernetes-autoscaling-mixin-vpa.json':
+    'kubernetes-autoscaling-mixin-vpa.json': if $._config.vpa.enabled then
       $._config.bypassDashboardValidation +
       dashboard.new(
         'Kubernetes / Autoscaling / Vertical Pod Autoscaler',
@@ -700,5 +700,7 @@ local tbOverride = tbStandardOptions.override;
       if $._config.annotation.enabled then
         dashboard.withAnnotations($._config.customAnnotation)
       else {},
-  }),
+  }) + if $._config.vpa.enabled then {
+    'kubernetes-autoscaling-mixin-vpa.json'+: $._config.bypassDashboardValidation,
+  } else {},
 }
