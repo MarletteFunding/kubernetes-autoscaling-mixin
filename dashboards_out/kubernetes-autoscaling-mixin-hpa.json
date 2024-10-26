@@ -502,6 +502,6 @@
       "to": "now"
    },
    "timezone": "utc",
-   "title": "Kubernetes / Autoscaling / Horitzontal Pod Autoscaling 2",
+   "title": "Kubernetes / Autoscaling / Horitzontal Pod Autoscaling",
    "uid": "kubernetes-autoscaling-mixin-hpa-jkwq"
 }

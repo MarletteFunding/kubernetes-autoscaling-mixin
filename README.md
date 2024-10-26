@@ -89,6 +89,8 @@ This mixin has its configuration in the `config.libsonnet` file. You can disable
 }
 ```
 
+The mixin has all components enabled by default and all the dashboards are generated in the `dashboards_out` directory. You can import them into Grafana.
+
 ### VPA Requirements
 
 Kube-state-metrics does not ship with VPA metrics by default. You need to deploy a custom kube-state-metrics with the following configuration:

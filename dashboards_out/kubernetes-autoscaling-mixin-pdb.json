@@ -563,6 +563,6 @@
       "to": "now"
    },
    "timezone": "utc",
-   "title": "Kubernetes / Autoscaling / Pod Disruption Budget 2",
+   "title": "Kubernetes / Autoscaling / Pod Disruption Budget",
    "uid": "kubernetes-autoscaling-mixin-pdb-jkwq"
 }

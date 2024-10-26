@@ -1,8 +1,10 @@
 # yamllint disable rule:line-length
+---
 rule_files:
   - prometheus_alerts.yaml
 
 tests:
+  # Karpenter
   - interval: 1m
     input_series:
       - series: 'karpenter_cloudprovider_errors_total{namespace="karpenter", job="karpenter", provider="aws", controller="node.termination", method="Get"}'
@@ -22,3 +24,58 @@ tests:
               summary: "Karpenter has Cloud Provider Errors."
               description: "The Karpenter provider aws with the controller node.termination has errors with the method Get."
               dashboard_url: "https://grafana.com/d/kubernetes-autoscaling-mixin-kperf-jkwq/kubernetes-autoscaling-karpenter-performance"
+  - interval: 1m
+    input_series:
+      - series: 'karpenter_nodepools_usage{namespace="karpenter", job="karpenter", nodepool="nodepool-a", resource_type="cpu"}'
+        values: "80x15"
+      - series: 'karpenter_nodepools_limit{namespace="karpenter", job="karpenter", nodepool="nodepool-a", resource_type="cpu"}'
+        values: "100x15"
+    alert_rule_test:
+      - eval_time: 15m
+        alertname: KarpenterNodepoolNearCapacity
+        exp_alerts:
+          - exp_labels:
+              namespace: karpenter
+              job: karpenter
+              nodepool: nodepool-a
+              resource_type: cpu
+              severity: warning
+            exp_annotations:
+              summary: "Karpenter Nodepool near capacity."
+              description: "The resource cpu in the Karpenter node pool nodepool-a is nearing its limit. Consider scaling or adding resources."
+              dashboard_url: "https://grafana.com/d/kubernetes-autoscaling-mixin-kover-jkwq/kubernetes-autoscaling-karpenter-overview"
+  # Cluster Autoscaler
+  - interval: 1m
+    input_series:
+      - series: 'cluster_autoscaler_nodes_count{namespace="autoscaler", job="cluster-autoscaler"}'
+        values: "95x15"
+      - series: 'cluster_autoscaler_max_nodes_count{namespace="autoscaler", job="cluster-autoscaler"}'
+        values: "100x15"
+    alert_rule_test:
+      - eval_time: 15m
+        alertname: ClusterAutoscalerNodeCountNearCapacity
+        exp_alerts:
+          - exp_labels:
+              namespace: autoscaler
+              job: cluster-autoscaler
+              severity: warning
+            exp_annotations:
+              summary: "Cluster Autoscaler Node Count near Capacity."
+              description: "The node count for the cluster autoscaler job cluster-autoscaler is reaching max limit. Consider scaling node groups."
+              dashboard_url: "https://grafana.com/d/kubernetes-autoscaling-mixin-ca-jkwq/kubernetes-autoscaling-cluster-autoscaler"
+  - interval: 1m
+    input_series:
+      - series: 'cluster_autoscaler_unschedulable_pods_count{namespace="autoscaler", job="cluster-autoscaler"}'
+        values: "1x15"
+    alert_rule_test:
+      - eval_time: 15m
+        alertname: ClusterAutoscalerUnschedulablePods
+        exp_alerts:
+          - exp_labels:
+              namespace: autoscaler
+              job: cluster-autoscaler
+              severity: warning
+            exp_annotations:
+              summary: "Pods Pending Scheduling - Cluster Node Group Scaling Required"
+              description: "The cluster currently has unschedulable pods, indicating resource shortages. Consider adding more nodes or increasing node group capacity."
+              dashboard_url: "https://grafana.com/d/kubernetes-autoscaling-mixin-ca-jkwq/kubernetes-autoscaling-cluster-autoscaler"

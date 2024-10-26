@@ -388,7 +388,7 @@ local tbOverride = tbStandardOptions.override;
     'kubernetes-autoscaling-mixin-pdb.json':
       $._config.bypassDashboardValidation +
       dashboard.new(
-        'Kubernetes / Autoscaling / Pod Disruption Budget 2',
+        'Kubernetes / Autoscaling / Pod Disruption Budget',
       ) +
       dashboard.withDescription('A dashboard that monitors Kubernetes and focuses on giving a overview for pod disruption budgets. It is created using the [Kubernetes / Autoscaling-mixin](https://github.com/adinhodovic/kubernetes-autoscaling-mixin).') +
       dashboard.withUid($._config.pdbDashboardUid) +

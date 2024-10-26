@@ -3,6 +3,7 @@ local annotation = g.dashboard.annotation;
 
 {
   _config+:: {
+    local this = self,
     // Bypasses grafana.com/dashboards validator
     bypassDashboardValidation: {
       __inputs: [],
@@ -10,8 +11,6 @@ local annotation = g.dashboard.annotation;
     },
 
     kubernetesStateMetricsSelector: 'job=~"kube-state-metrics"',
-    clusterAutoscalerSelector: 'job=~"cluster-autoscaler"',
-    karpenterSelector: 'job=~"karpenter"',
 
     grafanaUrl: 'https://grafana.com',
 
@@ -29,13 +28,22 @@ local annotation = g.dashboard.annotation;
 
     clusterAutoscaler: {
       enabled: true,
+      clusterAutoscalerSelector: 'job=~"cluster-autoscaler"',
+
+      nodeCountCapacityThreshold: 75,
+
+      clusterAutoscalerDashboardUrl: '%s/d/%s/kubernetes-autoscaling-cluster-autoscaler' % [this.grafanaUrl, this.clusterAutoscalerDashboardUid],
     },
 
     karpenter: {
       enabled: true,
-    },
+      karpenterSelector: 'job=~"karpenter"',
 
-    karpenterPerformanceDashboardUrl: '%s/d/%s/kubernetes-autoscaling-karpenter-performance' % [self.grafanaUrl, self.karpenterPerformanceDashboardUid],
+      nodepoolCapacityThreshold: 75,
+
+      karpenterOverviewDashboardUrl: '%s/d/%s/kubernetes-autoscaling-karpenter-overview' % [this.grafanaUrl, this.karpenterOverviewDashboardUid],
+      karpenterPerformanceDashboardUrl: '%s/d/%s/kubernetes-autoscaling-karpenter-performance' % [this.grafanaUrl, this.karpenterPerformanceDashboardUid],
+    },
 
     tags: ['kubernetes', 'autoscaling', 'kubernetes-autoscaling-mixin'],
 
