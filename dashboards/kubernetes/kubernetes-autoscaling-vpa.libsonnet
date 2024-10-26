@@ -35,7 +35,7 @@ local tbFieldConfig = tablePanel.fieldConfig;
 local tbOverride = tbStandardOptions.override;
 
 {
-  grafanaDashboards+:: {
+  grafanaDashboards+:: std.prune({
 
     local datasourceVariable =
       datasource.new(
@@ -700,5 +700,5 @@ local tbOverride = tbStandardOptions.override;
       if $._config.annotation.enabled then
         dashboard.withAnnotations($._config.customAnnotation)
       else {},
-  },
+  }),
 }
