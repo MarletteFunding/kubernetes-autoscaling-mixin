@@ -63,7 +63,7 @@
                ]
             }
          },
-         "pluginVersion": "v11.0.0",
+         "pluginVersion": "v11.1.0",
          "targets": [
             {
                "datasource": {
@@ -112,7 +112,7 @@
                ]
             }
          },
-         "pluginVersion": "v11.0.0",
+         "pluginVersion": "v11.1.0",
          "targets": [
             {
                "datasource": {
@@ -161,7 +161,7 @@
                ]
             }
          },
-         "pluginVersion": "v11.0.0",
+         "pluginVersion": "v11.1.0",
          "targets": [
             {
                "datasource": {
@@ -210,7 +210,7 @@
                ]
             }
          },
-         "pluginVersion": "v11.0.0",
+         "pluginVersion": "v11.1.0",
          "targets": [
             {
                "datasource": {
@@ -259,7 +259,7 @@
                ]
             }
          },
-         "pluginVersion": "v11.0.0",
+         "pluginVersion": "v11.1.0",
          "targets": [
             {
                "datasource": {
@@ -308,7 +308,7 @@
                ]
             }
          },
-         "pluginVersion": "v11.0.0",
+         "pluginVersion": "v11.1.0",
          "targets": [
             {
                "datasource": {
@@ -346,7 +346,7 @@
             },
             "pieType": "pie"
          },
-         "pluginVersion": "v11.0.0",
+         "pluginVersion": "v11.1.0",
          "targets": [
             {
                "datasource": {
@@ -386,7 +386,7 @@
             },
             "pieType": "pie"
          },
-         "pluginVersion": "v11.0.0",
+         "pluginVersion": "v11.1.0",
          "targets": [
             {
                "datasource": {
@@ -426,7 +426,7 @@
             },
             "pieType": "pie"
          },
-         "pluginVersion": "v11.0.0",
+         "pluginVersion": "v11.1.0",
          "targets": [
             {
                "datasource": {
@@ -466,7 +466,7 @@
             },
             "pieType": "pie"
          },
-         "pluginVersion": "v11.0.0",
+         "pluginVersion": "v11.1.0",
          "targets": [
             {
                "datasource": {
@@ -506,7 +506,7 @@
             },
             "pieType": "pie"
          },
-         "pluginVersion": "v11.0.0",
+         "pluginVersion": "v11.1.0",
          "targets": [
             {
                "datasource": {
@@ -546,7 +546,7 @@
             },
             "pieType": "pie"
          },
-         "pluginVersion": "v11.0.0",
+         "pluginVersion": "v11.1.0",
          "targets": [
             {
                "datasource": {
@@ -586,7 +586,7 @@
             },
             "pieType": "pie"
          },
-         "pluginVersion": "v11.0.0",
+         "pluginVersion": "v11.1.0",
          "targets": [
             {
                "datasource": {
@@ -649,7 +649,7 @@
                ]
             }
          },
-         "pluginVersion": "v11.0.0",
+         "pluginVersion": "v11.1.0",
          "targets": [
             {
                "datasource": {
@@ -698,7 +698,7 @@
                ]
             }
          },
-         "pluginVersion": "v11.0.0",
+         "pluginVersion": "v11.1.0",
          "targets": [
             {
                "datasource": {
@@ -747,7 +747,7 @@
                ]
             }
          },
-         "pluginVersion": "v11.0.0",
+         "pluginVersion": "v11.1.0",
          "targets": [
             {
                "datasource": {
@@ -796,7 +796,7 @@
                ]
             }
          },
-         "pluginVersion": "v11.0.0",
+         "pluginVersion": "v11.1.0",
          "targets": [
             {
                "datasource": {
@@ -834,7 +834,7 @@
             },
             "pieType": "pie"
          },
-         "pluginVersion": "v11.0.0",
+         "pluginVersion": "v11.1.0",
          "targets": [
             {
                "datasource": {
@@ -874,7 +874,7 @@
             },
             "pieType": "pie"
          },
-         "pluginVersion": "v11.0.0",
+         "pluginVersion": "v11.1.0",
          "targets": [
             {
                "datasource": {
@@ -914,7 +914,7 @@
             },
             "pieType": "pie"
          },
-         "pluginVersion": "v11.0.0",
+         "pluginVersion": "v11.1.0",
          "targets": [
             {
                "datasource": {
@@ -1030,7 +1030,7 @@
                }
             ]
          },
-         "pluginVersion": "v11.0.0",
+         "pluginVersion": "v11.1.0",
          "targets": [
             {
                "datasource": {
@@ -1328,7 +1328,7 @@
                }
             ]
          },
-         "pluginVersion": "v11.0.0",
+         "pluginVersion": "v11.1.0",
          "targets": [
             {
                "datasource": {
