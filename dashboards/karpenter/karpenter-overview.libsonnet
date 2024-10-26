@@ -50,10 +50,88 @@ local pieQueryOptions = pieChartPanel.queryOptions;
       query.refresh.onLoad() +
       query.refresh.onTime(),
 
+    local regionVariable =
+      query.new(
+        'region',
+        'label_values(karpenter_nodes_allocatable{job=~"$job"}, region)'
+      ) +
+      query.withDatasourceFromVariable(datasourceVariable) +
+      query.withSort(1) +
+      query.generalOptions.withLabel('Region') +
+      query.selectionOptions.withMulti(true) +
+      query.selectionOptions.withIncludeAll(true) +
+      query.refresh.onLoad() +
+      query.refresh.onTime(),
+
+    local zoneVariable =
+      query.new(
+        'zone',
+        'label_values(karpenter_nodes_allocatable{job=~"$job", region=~"$region"}, zone)'
+      ) +
+      query.withDatasourceFromVariable(datasourceVariable) +
+      query.withSort(1) +
+      query.generalOptions.withLabel('Zone') +
+      query.selectionOptions.withMulti(true) +
+      query.selectionOptions.withIncludeAll(true) +
+      query.refresh.onLoad() +
+      query.refresh.onTime(),
+
+    local archVariable =
+      query.new(
+        'arch',
+        'label_values(karpenter_nodes_allocatable{job=~"$job", region=~"$region", zone=~"$zone"}, arch)'
+      ) +
+      query.withDatasourceFromVariable(datasourceVariable) +
+      query.withSort(1) +
+      query.generalOptions.withLabel('Architecture') +
+      query.selectionOptions.withMulti(true) +
+      query.selectionOptions.withIncludeAll(true) +
+      query.refresh.onLoad() +
+      query.refresh.onTime(),
+
+    local osVariable =
+      query.new(
+        'os',
+        'label_values(karpenter_nodes_allocatable{job=~"$job", region=~"$region", zone=~"$zone", arch=~"$arch"}, os)'
+      ) +
+      query.withDatasourceFromVariable(datasourceVariable) +
+      query.withSort(1) +
+      query.generalOptions.withLabel('Operating System') +
+      query.selectionOptions.withMulti(true) +
+      query.selectionOptions.withIncludeAll(true) +
+      query.refresh.onLoad() +
+      query.refresh.onTime(),
+
+    local instanceTypeVariable =
+      query.new(
+        'instance_type',
+        'label_values(karpenter_nodes_allocatable{job=~"$job", region=~"$region", zone=~"$zone", arch=~"$arch", os=~"$os"}, instance_type)'
+      ) +
+      query.withDatasourceFromVariable(datasourceVariable) +
+      query.withSort(1) +
+      query.generalOptions.withLabel('Instance Type') +
+      query.selectionOptions.withMulti(true) +
+      query.selectionOptions.withIncludeAll(true) +
+      query.refresh.onLoad() +
+      query.refresh.onTime(),
+
+    local capacityTypeVariable =
+      query.new(
+        'capacity_type',
+        'label_values(karpenter_nodes_allocatable{job=~"$job", region=~"$region", zone=~"$zone", arch=~"$arch", os=~"$os", instance_type=~"$instance_type"}, capacity_type)'
+      ) +
+      query.withDatasourceFromVariable(datasourceVariable) +
+      query.withSort(1) +
+      query.generalOptions.withLabel('Capacity Type') +
+      query.selectionOptions.withMulti(true) +
+      query.selectionOptions.withIncludeAll(true) +
+      query.refresh.onLoad() +
+      query.refresh.onTime(),
+
     local nodePoolVariable =
       query.new(
         'nodepool',
-        'label_values(karpenter_nodepools_allowed_disruptions{job=~"$job"}, nodepool)'
+        'label_values(karpenter_nodes_allocatable{job=~"$job", region=~"$region", zone=~"$zone", arch=~"$arch", os=~"$os", instance_type=~"$instance_type", capacity_type=~"$capacity_type"}, nodepool)'
       ) +
       query.withDatasourceFromVariable(datasourceVariable) +
       query.withSort(1) +
@@ -66,6 +144,12 @@ local pieQueryOptions = pieChartPanel.queryOptions;
     local variables = [
       datasourceVariable,
       jobVariable,
+      regionVariable,
+      zoneVariable,
+      archVariable,
+      osVariable,
+      instanceTypeVariable,
+      capacityTypeVariable,
       nodePoolVariable,
     ],
 
@@ -103,6 +187,12 @@ local pieQueryOptions = pieChartPanel.queryOptions;
         count(
           karpenter_nodes_allocatable{
             job=~"$job",
+            region=~"$region",
+            zone=~"$zone",
+            arch=~"$arch",
+            os=~"$os",
+            instance_type=~"$instance_type",
+            capacity_type=~"$capacity_type",
             nodepool=~"$nodepool"
           }
         ) by (node_name)
@@ -220,6 +310,23 @@ local pieQueryOptions = pieChartPanel.queryOptions;
         stStandardOptions.threshold.step.withColor('green'),
       ]),
 
+    local karpenterNodesByNodePoolQuery = |||
+      count by (nodepool) (
+        count by (node_name, nodepool) (
+          karpenter_nodes_allocatable{
+            job=~"$job",
+            region=~"$region",
+            zone=~"$zone",
+            arch=~"$arch",
+            os=~"$os",
+            instance_type=~"$instance_type",
+            capacity_type=~"$capacity_type",
+            nodepool=~"$nodepool"
+          }
+        )
+      )
+    |||,
+
     local karpenterNodesByNodePoolPieChartPanel =
       pieChartPanel.new(
         'Nodes by Node Pool'
@@ -238,6 +345,23 @@ local pieQueryOptions = pieChartPanel.queryOptions;
       pieOptions.legend.withDisplayMode('table') +
       pieOptions.legend.withValues(['value', 'percent']) +
       pieOptions.legend.withSortDesc(true),
+
+    local karpenterNodesByInstanceTypeQuery = |||
+      count by (instance_type) (
+        count by (node_name, instance_type) (
+          karpenter_nodes_allocatable{
+            job=~"$job",
+            region=~"$region",
+            zone=~"$zone",
+            arch=~"$arch",
+            os=~"$os",
+            instance_type=~"$instance_type",
+            capacity_type=~"$capacity_type",
+            nodepool=~"$nodepool"
+          }
+        )
+      )
+    |||,
 
     local karpenterNodesByInstanceTypePieChartPanel =
       pieChartPanel.new(
@@ -263,6 +387,12 @@ local pieQueryOptions = pieChartPanel.queryOptions;
         count by (node_name, capacity_type) (
           karpenter_nodes_allocatable{
             job=~"$job",
+            region=~"$region",
+            zone=~"$zone",
+            arch=~"$arch",
+            os=~"$os",
+            instance_type=~"$instance_type",
+            capacity_type=~"$capacity_type",
             nodepool=~"$nodepool"
           }
         )
@@ -293,6 +423,12 @@ local pieQueryOptions = pieChartPanel.queryOptions;
         count by (node_name, region) (
           karpenter_nodes_allocatable{
             job=~"$job",
+            region=~"$region",
+            zone=~"$zone",
+            arch=~"$arch",
+            os=~"$os",
+            instance_type=~"$instance_type",
+            capacity_type=~"$capacity_type",
             nodepool=~"$nodepool"
           }
         )
@@ -323,6 +459,12 @@ local pieQueryOptions = pieChartPanel.queryOptions;
         count by (node_name, zone) (
           karpenter_nodes_allocatable{
             job=~"$job",
+            nodepool=~"$nodepool",
+            zone=~"$zone",
+            arch=~"$arch",
+            os=~"$os",
+            instance_type=~"$instance_type",
+            capacity_type=~"$capacity_type",
             nodepool=~"$nodepool"
           }
         )
@@ -353,6 +495,12 @@ local pieQueryOptions = pieChartPanel.queryOptions;
         count by (node_name, arch) (
           karpenter_nodes_allocatable{
             job=~"$job",
+            nodepool=~"$nodepool",
+            zone=~"$zone",
+            arch=~"$arch",
+            os=~"$os",
+            instance_type=~"$instance_type",
+            capacity_type=~"$capacity_type",
             nodepool=~"$nodepool"
           }
         )
@@ -383,6 +531,12 @@ local pieQueryOptions = pieChartPanel.queryOptions;
         count by (node_name, os) (
           karpenter_nodes_allocatable{
             job=~"$job",
+            region=~"$region",
+            zone=~"$zone",
+            arch=~"$arch",
+            os=~"$os",
+            instance_type=~"$instance_type",
+            capacity_type=~"$capacity_type",
             nodepool=~"$nodepool"
           }
         )
@@ -408,33 +562,18 @@ local pieQueryOptions = pieChartPanel.queryOptions;
       pieOptions.legend.withValues(['value', 'percent']) +
       pieOptions.legend.withSortDesc(true),
 
-    local karpenterNodesByInstanceTypeQuery = |||
-      count by (instance_type) (
-        count by (node_name, instance_type) (
-          karpenter_nodes_allocatable{
-            job=~"$job",
-            nodepool=~"$nodepool"
-          }
-        )
-      )
-    |||,
-
-    local karpenterNodesByNodePoolQuery = |||
-      count by (nodepool) (
-        count by (node_name, nodepool) (
-          karpenter_nodes_allocatable{
-            job=~"$job",
-            nodepool=~"$nodepool"
-          }
-        )
-      )
-    |||,
 
     local karpenterPodCpuRequestsQuery = |||
       sum(
         karpenter_nodes_total_pod_requests{
           job=~"$job",
           resource_type="cpu",
+          region=~"$region",
+          zone=~"$zone",
+          arch=~"$arch",
+          os=~"$os",
+          instance_type=~"$instance_type",
+          capacity_type=~"$capacity_type",
           nodepool=~"$nodepool"
         }
       ) +
@@ -442,6 +581,12 @@ local pieQueryOptions = pieChartPanel.queryOptions;
         karpenter_nodes_total_daemon_requests{
           job=~"$job",
           resource_type="cpu",
+          region=~"$region",
+          zone=~"$zone",
+          arch=~"$arch",
+          os=~"$os",
+          instance_type=~"$instance_type",
+          capacity_type=~"$capacity_type",
           nodepool=~"$nodepool"
         }
       )
@@ -799,24 +944,42 @@ local pieQueryOptions = pieChartPanel.queryOptions;
           sum(
             karpenter_nodes_total_pod_requests{
               job=~"$job",
-              nodepool=~"$nodepool",
-              resource_type="cpu"
+              resource_type="cpu",
+              region=~"$region",
+              zone=~"$zone",
+              arch=~"$arch",
+              os=~"$os",
+              instance_type=~"$instance_type",
+              capacity_type=~"$capacity_type",
+              nodepool=~"$nodepool"
             }
           ) by (%s)
           +
           sum(
             karpenter_nodes_total_daemon_requests{
               job=~"$job",
-              nodepool=~"$nodepool",
-              resource_type="cpu"
+              resource_type="cpu",
+              region=~"$region",
+              zone=~"$zone",
+              arch=~"$arch",
+              os=~"$os",
+              instance_type=~"$instance_type",
+              capacity_type=~"$capacity_type",
+              nodepool=~"$nodepool"
             }
           ) by (%s)
         ) /
         sum(
           karpenter_nodes_allocatable{
             job=~"$job",
-            nodepool=~"$nodepool",
-            resource_type="cpu"
+            resource_type="cpu",
+            region=~"$region",
+            zone=~"$zone",
+            arch=~"$arch",
+            os=~"$os",
+            instance_type=~"$instance_type",
+            capacity_type=~"$capacity_type",
+            nodepool=~"$nodepool"
           }
         ) by (%s)
       ) * 100

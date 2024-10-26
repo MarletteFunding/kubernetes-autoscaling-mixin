@@ -119,7 +119,7 @@
                   "type": "prometheus",
                   "uid": "$datasource"
                },
-               "expr": "count(\n  count(\n    karpenter_nodes_allocatable{\n      job=~\"$job\",\n      nodepool=~\"$nodepool\"\n    }\n  ) by (node_name)\n)\n"
+               "expr": "count(\n  count(\n    karpenter_nodes_allocatable{\n      job=~\"$job\",\n      region=~\"$region\",\n      zone=~\"$zone\",\n      arch=~\"$arch\",\n      os=~\"$os\",\n      instance_type=~\"$instance_type\",\n      capacity_type=~\"$capacity_type\",\n      nodepool=~\"$nodepool\"\n    }\n  ) by (node_name)\n)\n"
             }
          ],
          "title": "Nodes",
@@ -353,7 +353,7 @@
                   "type": "prometheus",
                   "uid": "$datasource"
                },
-               "expr": "count by (nodepool) (\n  count by (node_name, nodepool) (\n    karpenter_nodes_allocatable{\n      job=~\"$job\",\n      nodepool=~\"$nodepool\"\n    }\n  )\n)\n",
+               "expr": "count by (nodepool) (\n  count by (node_name, nodepool) (\n    karpenter_nodes_allocatable{\n      job=~\"$job\",\n      region=~\"$region\",\n      zone=~\"$zone\",\n      arch=~\"$arch\",\n      os=~\"$os\",\n      instance_type=~\"$instance_type\",\n      capacity_type=~\"$capacity_type\",\n      nodepool=~\"$nodepool\"\n    }\n  )\n)\n",
                "instant": true,
                "legendFormat": "{{ nodepool }}"
             }
@@ -393,7 +393,7 @@
                   "type": "prometheus",
                   "uid": "$datasource"
                },
-               "expr": "count by (instance_type) (\n  count by (node_name, instance_type) (\n    karpenter_nodes_allocatable{\n      job=~\"$job\",\n      nodepool=~\"$nodepool\"\n    }\n  )\n)\n",
+               "expr": "count by (instance_type) (\n  count by (node_name, instance_type) (\n    karpenter_nodes_allocatable{\n      job=~\"$job\",\n      region=~\"$region\",\n      zone=~\"$zone\",\n      arch=~\"$arch\",\n      os=~\"$os\",\n      instance_type=~\"$instance_type\",\n      capacity_type=~\"$capacity_type\",\n      nodepool=~\"$nodepool\"\n    }\n  )\n)\n",
                "instant": true,
                "legendFormat": "{{ instance_type }}"
             }
@@ -433,7 +433,7 @@
                   "type": "prometheus",
                   "uid": "$datasource"
                },
-               "expr": "count by (capacity_type) (\n  count by (node_name, capacity_type) (\n    karpenter_nodes_allocatable{\n      job=~\"$job\",\n      nodepool=~\"$nodepool\"\n    }\n  )\n)\n",
+               "expr": "count by (capacity_type) (\n  count by (node_name, capacity_type) (\n    karpenter_nodes_allocatable{\n      job=~\"$job\",\n      region=~\"$region\",\n      zone=~\"$zone\",\n      arch=~\"$arch\",\n      os=~\"$os\",\n      instance_type=~\"$instance_type\",\n      capacity_type=~\"$capacity_type\",\n      nodepool=~\"$nodepool\"\n    }\n  )\n)\n",
                "instant": true,
                "legendFormat": "{{ capacity_type }}"
             }
@@ -473,7 +473,7 @@
                   "type": "prometheus",
                   "uid": "$datasource"
                },
-               "expr": "count by (region) (\n  count by (node_name, region) (\n    karpenter_nodes_allocatable{\n      job=~\"$job\",\n      nodepool=~\"$nodepool\"\n    }\n  )\n)\n",
+               "expr": "count by (region) (\n  count by (node_name, region) (\n    karpenter_nodes_allocatable{\n      job=~\"$job\",\n      region=~\"$region\",\n      zone=~\"$zone\",\n      arch=~\"$arch\",\n      os=~\"$os\",\n      instance_type=~\"$instance_type\",\n      capacity_type=~\"$capacity_type\",\n      nodepool=~\"$nodepool\"\n    }\n  )\n)\n",
                "instant": true,
                "legendFormat": "{{ region }}"
             }
@@ -513,7 +513,7 @@
                   "type": "prometheus",
                   "uid": "$datasource"
                },
-               "expr": "count by (zone) (\n  count by (node_name, zone) (\n    karpenter_nodes_allocatable{\n      job=~\"$job\",\n      nodepool=~\"$nodepool\"\n    }\n  )\n)\n",
+               "expr": "count by (zone) (\n  count by (node_name, zone) (\n    karpenter_nodes_allocatable{\n      job=~\"$job\",\n      nodepool=~\"$nodepool\",\n      zone=~\"$zone\",\n      arch=~\"$arch\",\n      os=~\"$os\",\n      instance_type=~\"$instance_type\",\n      capacity_type=~\"$capacity_type\",\n      nodepool=~\"$nodepool\"\n    }\n  )\n)\n",
                "instant": true,
                "legendFormat": "{{ zone }}"
             }
@@ -553,7 +553,7 @@
                   "type": "prometheus",
                   "uid": "$datasource"
                },
-               "expr": "count by (arch) (\n  count by (node_name, arch) (\n    karpenter_nodes_allocatable{\n      job=~\"$job\",\n      nodepool=~\"$nodepool\"\n    }\n  )\n)\n",
+               "expr": "count by (arch) (\n  count by (node_name, arch) (\n    karpenter_nodes_allocatable{\n      job=~\"$job\",\n      nodepool=~\"$nodepool\",\n      zone=~\"$zone\",\n      arch=~\"$arch\",\n      os=~\"$os\",\n      instance_type=~\"$instance_type\",\n      capacity_type=~\"$capacity_type\",\n      nodepool=~\"$nodepool\"\n    }\n  )\n)\n",
                "instant": true,
                "legendFormat": "{{ arch }}"
             }
@@ -593,7 +593,7 @@
                   "type": "prometheus",
                   "uid": "$datasource"
                },
-               "expr": "count by (os) (\n  count by (node_name, os) (\n    karpenter_nodes_allocatable{\n      job=~\"$job\",\n      nodepool=~\"$nodepool\"\n    }\n  )\n)\n",
+               "expr": "count by (os) (\n  count by (node_name, os) (\n    karpenter_nodes_allocatable{\n      job=~\"$job\",\n      region=~\"$region\",\n      zone=~\"$zone\",\n      arch=~\"$arch\",\n      os=~\"$os\",\n      instance_type=~\"$instance_type\",\n      capacity_type=~\"$capacity_type\",\n      nodepool=~\"$nodepool\"\n    }\n  )\n)\n",
                "instant": true,
                "legendFormat": "{{ os }}"
             }
@@ -656,7 +656,7 @@
                   "type": "prometheus",
                   "uid": "$datasource"
                },
-               "expr": "sum(\n  karpenter_nodes_total_pod_requests{\n    job=~\"$job\",\n    resource_type=\"cpu\",\n    nodepool=~\"$nodepool\"\n  }\n) +\nsum(\n  karpenter_nodes_total_daemon_requests{\n    job=~\"$job\",\n    resource_type=\"cpu\",\n    nodepool=~\"$nodepool\"\n  }\n)\n"
+               "expr": "sum(\n  karpenter_nodes_total_pod_requests{\n    job=~\"$job\",\n    resource_type=\"cpu\",\n    region=~\"$region\",\n    zone=~\"$zone\",\n    arch=~\"$arch\",\n    os=~\"$os\",\n    instance_type=~\"$instance_type\",\n    capacity_type=~\"$capacity_type\",\n    nodepool=~\"$nodepool\"\n  }\n) +\nsum(\n  karpenter_nodes_total_daemon_requests{\n    job=~\"$job\",\n    resource_type=\"cpu\",\n    region=~\"$region\",\n    zone=~\"$zone\",\n    arch=~\"$arch\",\n    os=~\"$os\",\n    instance_type=~\"$instance_type\",\n    capacity_type=~\"$capacity_type\",\n    nodepool=~\"$nodepool\"\n  }\n)\n"
             }
          ],
          "title": "Pod CPU Requests",
@@ -705,7 +705,7 @@
                   "type": "prometheus",
                   "uid": "$datasource"
                },
-               "expr": "sum(\n  karpenter_nodes_total_pod_requests{\n    job=~\"$job\",\n    resource_type=\"memory\",\n    nodepool=~\"$nodepool\"\n  }\n) +\nsum(\n  karpenter_nodes_total_daemon_requests{\n    job=~\"$job\",\n    resource_type=\"memory\",\n    nodepool=~\"$nodepool\"\n  }\n)\n"
+               "expr": "sum(\n  karpenter_nodes_total_pod_requests{\n    job=~\"$job\",\n    resource_type=\"memory\",\n    region=~\"$region\",\n    zone=~\"$zone\",\n    arch=~\"$arch\",\n    os=~\"$os\",\n    instance_type=~\"$instance_type\",\n    capacity_type=~\"$capacity_type\",\n    nodepool=~\"$nodepool\"\n  }\n) +\nsum(\n  karpenter_nodes_total_daemon_requests{\n    job=~\"$job\",\n    resource_type=\"memory\",\n    region=~\"$region\",\n    zone=~\"$zone\",\n    arch=~\"$arch\",\n    os=~\"$os\",\n    instance_type=~\"$instance_type\",\n    capacity_type=~\"$capacity_type\",\n    nodepool=~\"$nodepool\"\n  }\n)\n"
             }
          ],
          "title": "Pod Memory Requests",
@@ -754,7 +754,7 @@
                   "type": "prometheus",
                   "uid": "$datasource"
                },
-               "expr": "sum(\n  karpenter_nodes_total_pod_limits{\n    job=~\"$job\",\n    resource_type=\"cpu\",\n    nodepool=~\"$nodepool\"\n  }\n) +\nsum(\n  karpenter_nodes_total_daemon_limits{\n    job=~\"$job\",\n    resource_type=\"cpu\",\n    nodepool=~\"$nodepool\"\n  }\n)\n"
+               "expr": "sum(\n  karpenter_nodes_total_pod_limits{\n    job=~\"$job\",\n    resource_type=\"cpu\",\n    region=~\"$region\",\n    zone=~\"$zone\",\n    arch=~\"$arch\",\n    os=~\"$os\",\n    instance_type=~\"$instance_type\",\n    capacity_type=~\"$capacity_type\",\n    nodepool=~\"$nodepool\"\n  }\n) +\nsum(\n  karpenter_nodes_total_daemon_limits{\n    job=~\"$job\",\n    resource_type=\"cpu\",\n    region=~\"$region\",\n    zone=~\"$zone\",\n    arch=~\"$arch\",\n    os=~\"$os\",\n    instance_type=~\"$instance_type\",\n    capacity_type=~\"$capacity_type\",\n    nodepool=~\"$nodepool\"\n  }\n)\n"
             }
          ],
          "title": "Pod CPU Limits",
@@ -803,7 +803,7 @@
                   "type": "prometheus",
                   "uid": "$datasource"
                },
-               "expr": "sum(\n  karpenter_nodes_total_pod_limits{\n    job=~\"$job\",\n    resource_type=\"memory\",\n    nodepool=~\"$nodepool\"\n  }\n) +\nsum(\n  karpenter_nodes_total_daemon_limits{\n    job=~\"$job\",\n    resource_type=\"memory\",\n    nodepool=~\"$nodepool\"\n  }\n)\n"
+               "expr": "sum(\n  karpenter_nodes_total_pod_limits{\n    job=~\"$job\",\n    resource_type=\"memory\",\n    region=~\"$region\",\n    zone=~\"$zone\",\n    arch=~\"$arch\",\n    os=~\"$os\",\n    instance_type=~\"$instance_type\",\n    capacity_type=~\"$capacity_type\",\n    nodepool=~\"$nodepool\"\n  }\n) +\nsum(\n  karpenter_nodes_total_daemon_limits{\n    job=~\"$job\",\n    resource_type=\"memory\",\n    region=~\"$region\",\n    zone=~\"$zone\",\n    arch=~\"$arch\",\n    os=~\"$os\",\n    instance_type=~\"$instance_type\",\n    capacity_type=~\"$capacity_type\",\n    nodepool=~\"$nodepool\"\n  }\n)\n"
             }
          ],
          "title": "Pod Memory Limits",
@@ -1335,7 +1335,7 @@
                   "type": "prometheus",
                   "uid": "$datasource"
                },
-               "expr": "(\n  (\n    sum(\n      karpenter_nodes_total_pod_requests{\n        job=~\"$job\",\n        nodepool=~\"$nodepool\",\n        resource_type=\"cpu\"\n      }\n    ) by (node_name, nodepool, instance_type, instance_memory, instance_cpu, instance_network_bandwidth, region, zone, os, capacity_type, arch)\n    +\n    sum(\n      karpenter_nodes_total_daemon_requests{\n        job=~\"$job\",\n        nodepool=~\"$nodepool\",\n        resource_type=\"cpu\"\n      }\n    ) by (node_name, nodepool, instance_type, instance_memory, instance_cpu, instance_network_bandwidth, region, zone, os, capacity_type, arch)\n  ) /\n  sum(\n    karpenter_nodes_allocatable{\n      job=~\"$job\",\n      nodepool=~\"$nodepool\",\n      resource_type=\"cpu\"\n    }\n  ) by (node_name, nodepool, instance_type, instance_memory, instance_cpu, instance_network_bandwidth, region, zone, os, capacity_type, arch)\n) * 100\n",
+               "expr": "(\n  (\n    sum(\n      karpenter_nodes_total_pod_requests{\n        job=~\"$job\",\n        resource_type=\"cpu\",\n        region=~\"$region\",\n        zone=~\"$zone\",\n        arch=~\"$arch\",\n        os=~\"$os\",\n        instance_type=~\"$instance_type\",\n        capacity_type=~\"$capacity_type\",\n        nodepool=~\"$nodepool\"\n      }\n    ) by (node_name, nodepool, instance_type, instance_memory, instance_cpu, instance_network_bandwidth, region, zone, os, capacity_type, arch)\n    +\n    sum(\n      karpenter_nodes_total_daemon_requests{\n        job=~\"$job\",\n        resource_type=\"cpu\",\n        region=~\"$region\",\n        zone=~\"$zone\",\n        arch=~\"$arch\",\n        os=~\"$os\",\n        instance_type=~\"$instance_type\",\n        capacity_type=~\"$capacity_type\",\n        nodepool=~\"$nodepool\"\n      }\n    ) by (node_name, nodepool, instance_type, instance_memory, instance_cpu, instance_network_bandwidth, region, zone, os, capacity_type, arch)\n  ) /\n  sum(\n    karpenter_nodes_allocatable{\n      job=~\"$job\",\n      resource_type=\"cpu\",\n      region=~\"$region\",\n      zone=~\"$zone\",\n      arch=~\"$arch\",\n      os=~\"$os\",\n      instance_type=~\"$instance_type\",\n      capacity_type=~\"$capacity_type\",\n      nodepool=~\"$nodepool\"\n    }\n  ) by (node_name, nodepool, instance_type, instance_memory, instance_cpu, instance_network_bandwidth, region, zone, os, capacity_type, arch)\n) * 100\n",
                "format": "table",
                "instant": true
             },
@@ -1344,7 +1344,7 @@
                   "type": "prometheus",
                   "uid": "$datasource"
                },
-               "expr": "(\n  (\n    sum(\n      karpenter_nodes_total_pod_requests{\n        job=~\"$job\",\n        nodepool=~\"$nodepool\",\n        resource_type=\"memory\"\n      }\n    ) by (node_name, nodepool, instance_type, instance_memory, instance_memory, instance_network_bandwidth, region, zone, os, capacity_type, arch)\n    +\n    sum(\n      karpenter_nodes_total_daemon_requests{\n        job=~\"$job\",\n        nodepool=~\"$nodepool\",\n        resource_type=\"memory\"\n      }\n    ) by (node_name, nodepool, instance_type, instance_memory, instance_memory, instance_network_bandwidth, region, zone, os, capacity_type, arch)\n  ) /\n  sum(\n    karpenter_nodes_allocatable{\n      job=~\"$job\",\n      nodepool=~\"$nodepool\",\n      resource_type=\"memory\"\n    }\n  ) by (node_name, nodepool, instance_type, instance_memory, instance_memory, instance_network_bandwidth, region, zone, os, capacity_type, arch)\n) * 100\n",
+               "expr": "(\n  (\n    sum(\n      karpenter_nodes_total_pod_requests{\n        job=~\"$job\",\n        resource_type=\"memory\",\n        region=~\"$region\",\n        zone=~\"$zone\",\n        arch=~\"$arch\",\n        os=~\"$os\",\n        instance_type=~\"$instance_type\",\n        capacity_type=~\"$capacity_type\",\n        nodepool=~\"$nodepool\"\n      }\n    ) by (node_name, nodepool, instance_type, instance_memory, instance_memory, instance_network_bandwidth, region, zone, os, capacity_type, arch)\n    +\n    sum(\n      karpenter_nodes_total_daemon_requests{\n        job=~\"$job\",\n        resource_type=\"memory\",\n        region=~\"$region\",\n        zone=~\"$zone\",\n        arch=~\"$arch\",\n        os=~\"$os\",\n        instance_type=~\"$instance_type\",\n        capacity_type=~\"$capacity_type\",\n        nodepool=~\"$nodepool\"\n      }\n    ) by (node_name, nodepool, instance_type, instance_memory, instance_memory, instance_network_bandwidth, region, zone, os, capacity_type, arch)\n  ) /\n  sum(\n    karpenter_nodes_allocatable{\n      job=~\"$job\",\n      resource_type=\"memory\",\n      region=~\"$region\",\n      zone=~\"$zone\",\n      arch=~\"$arch\",\n      os=~\"$os\",\n      instance_type=~\"$instance_type\",\n      capacity_type=~\"$capacity_type\",\n      nodepool=~\"$nodepool\"\n    }\n  ) by (node_name, nodepool, instance_type, instance_memory, instance_memory, instance_network_bandwidth, region, zone, os, capacity_type, arch)\n) * 100\n",
                "format": "table",
                "instant": true
             }
@@ -1426,10 +1426,94 @@
                "uid": "${datasource}"
             },
             "includeAll": true,
+            "label": "Region",
+            "multi": true,
+            "name": "region",
+            "query": "label_values(karpenter_nodes_allocatable{job=~\"$job\"}, region)",
+            "refresh": 2,
+            "sort": 1,
+            "type": "query"
+         },
+         {
+            "datasource": {
+               "type": "prometheus",
+               "uid": "${datasource}"
+            },
+            "includeAll": true,
+            "label": "Zone",
+            "multi": true,
+            "name": "zone",
+            "query": "label_values(karpenter_nodes_allocatable{job=~\"$job\", region=~\"$region\"}, zone)",
+            "refresh": 2,
+            "sort": 1,
+            "type": "query"
+         },
+         {
+            "datasource": {
+               "type": "prometheus",
+               "uid": "${datasource}"
+            },
+            "includeAll": true,
+            "label": "Architecture",
+            "multi": true,
+            "name": "arch",
+            "query": "label_values(karpenter_nodes_allocatable{job=~\"$job\", region=~\"$region\", zone=~\"$zone\"}, arch)",
+            "refresh": 2,
+            "sort": 1,
+            "type": "query"
+         },
+         {
+            "datasource": {
+               "type": "prometheus",
+               "uid": "${datasource}"
+            },
+            "includeAll": true,
+            "label": "Operating System",
+            "multi": true,
+            "name": "os",
+            "query": "label_values(karpenter_nodes_allocatable{job=~\"$job\", region=~\"$region\", zone=~\"$zone\", arch=~\"$arch\"}, os)",
+            "refresh": 2,
+            "sort": 1,
+            "type": "query"
+         },
+         {
+            "datasource": {
+               "type": "prometheus",
+               "uid": "${datasource}"
+            },
+            "includeAll": true,
+            "label": "Instance Type",
+            "multi": true,
+            "name": "instance_type",
+            "query": "label_values(karpenter_nodes_allocatable{job=~\"$job\", region=~\"$region\", zone=~\"$zone\", arch=~\"$arch\", os=~\"$os\"}, instance_type)",
+            "refresh": 2,
+            "sort": 1,
+            "type": "query"
+         },
+         {
+            "datasource": {
+               "type": "prometheus",
+               "uid": "${datasource}"
+            },
+            "includeAll": true,
+            "label": "Capacity Type",
+            "multi": true,
+            "name": "capacity_type",
+            "query": "label_values(karpenter_nodes_allocatable{job=~\"$job\", region=~\"$region\", zone=~\"$zone\", arch=~\"$arch\", os=~\"$os\", instance_type=~\"$instance_type\"}, capacity_type)",
+            "refresh": 2,
+            "sort": 1,
+            "type": "query"
+         },
+         {
+            "datasource": {
+               "type": "prometheus",
+               "uid": "${datasource}"
+            },
+            "includeAll": true,
             "label": "Node Pool",
             "multi": true,
             "name": "nodepool",
-            "query": "label_values(karpenter_nodepools_allowed_disruptions{job=~\"$job\"}, nodepool)",
+            "query": "label_values(karpenter_nodes_allocatable{job=~\"$job\", region=~\"$region\", zone=~\"$zone\", arch=~\"$arch\", os=~\"$os\", instance_type=~\"$instance_type\", capacity_type=~\"$capacity_type\"}, nodepool)",
             "refresh": 2,
             "sort": 1,
             "type": "query"
