@@ -149,13 +149,13 @@ local tsLegend = tsOptions.legend;
       round(
         sum(
           cluster_autoscaler_nodes_count{
-            job=~"$job"
+            job=~"$job",
+            state="ready"
           }
         ) /
         sum(
           cluster_autoscaler_nodes_count{
-            job=~"$job",
-            state="ready"
+            job=~"$job"
           }
         ) * 100
       )

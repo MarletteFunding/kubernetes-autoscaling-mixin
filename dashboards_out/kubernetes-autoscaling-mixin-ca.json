@@ -219,7 +219,7 @@
                   "type": "prometheus",
                   "uid": "$datasource"
                },
-               "expr": "round(\n  sum(\n    cluster_autoscaler_nodes_count{\n      job=~\"$job\"\n    }\n  ) /\n  sum(\n    cluster_autoscaler_nodes_count{\n      job=~\"$job\",\n      state=\"ready\"\n    }\n  ) * 100\n)\n"
+               "expr": "round(\n  sum(\n    cluster_autoscaler_nodes_count{\n      job=~\"$job\",\n      state=\"ready\"\n    }\n  ) /\n  sum(\n    cluster_autoscaler_nodes_count{\n      job=~\"$job\"\n    }\n  ) * 100\n)\n"
             }
          ],
          "title": "Healthy Nodes",
