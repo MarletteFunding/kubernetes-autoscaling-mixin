@@ -299,7 +299,7 @@ local tbQueryOptions = tablePanel.queryOptions;
 
     local hpaUsageThresholdTimeSeriesPanel =
       timeSeriesPanel.new(
-        'Usage & Threshold by Utilization',
+        'Utilization & Threshold',
       ) +
       tsQueryOptions.withTargets(
         [
@@ -385,7 +385,7 @@ local tbQueryOptions = tablePanel.queryOptions;
     'kubernetes-autoscaling-mixin-hpa.json':
       $._config.bypassDashboardValidation +
       dashboard.new(
-        'Kubernetes / Autoscaling / Horitzontal Pod Autoscaling',
+        'Kubernetes / Autoscaling / Horitzontal Pod Autoscaler',
       ) +
       dashboard.withDescription('A dashboard that monitors Kubernetes and focuses on giving a overview for horizontal pod autoscalers. It is created using the [Kubernetes / Autoscaling-mixin](https://github.com/adinhodovic/kubernetes-autoscaling-mixin).') +
       dashboard.withUid($._config.hpaDashboardUid) +

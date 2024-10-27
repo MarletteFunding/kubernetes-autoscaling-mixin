@@ -349,7 +349,7 @@
                "legendFormat": "Threshold / {{ metric_name }}"
             }
          ],
-         "title": "Usage & Threshold by Utilization",
+         "title": "Utilization & Threshold",
          "type": "timeseries"
       },
       {
@@ -502,6 +502,6 @@
       "to": "now"
    },
    "timezone": "utc",
-   "title": "Kubernetes / Autoscaling / Horitzontal Pod Autoscaling",
+   "title": "Kubernetes / Autoscaling / Horitzontal Pod Autoscaler",
    "uid": "kubernetes-autoscaling-mixin-hpa-jkwq"
 }
