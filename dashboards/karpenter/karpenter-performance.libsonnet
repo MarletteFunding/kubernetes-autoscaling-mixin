@@ -611,7 +611,7 @@ local tsLegend = tsOptions.legend;
       dashboard.new(
         'Kubernetes / Autoscaling / Karpenter / Performance',
       ) +
-      dashboard.withDescription('A dashboard that monitors Karpenter and focuses on Karpenter performance. It is created using the [Kubernetes Autoscaling-mixin](https://github.com/adinhodovic/kubernetes-autoscaling-mixin).') +
+      dashboard.withDescription('A dashboard that monitors Karpenter and focuses on Karpenter performance. It is created using the [kubernetes-autoscaling-mixin](https://github.com/adinhodovic/kubernetes-autoscaling-mixin).') +
       dashboard.withUid($._config.karpenterPerformanceDashboardUid) +
       dashboard.withTags($._config.tags + ['karpenter']) +
       dashboard.withTimezone('utc') +

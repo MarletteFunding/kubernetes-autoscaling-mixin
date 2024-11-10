@@ -390,7 +390,7 @@ local tbOverride = tbStandardOptions.override;
       dashboard.new(
         'Kubernetes / Autoscaling / Pod Disruption Budget',
       ) +
-      dashboard.withDescription('A dashboard that monitors Kubernetes and focuses on giving a overview for pod disruption budgets. It is created using the [Kubernetes / Autoscaling-mixin](https://github.com/adinhodovic/kubernetes-autoscaling-mixin).') +
+      dashboard.withDescription('A dashboard that monitors Kubernetes and focuses on giving a overview for pod disruption budgets. It is created using the [kubernetes-autoscaling-mixin](https://github.com/adinhodovic/kubernetes-autoscaling-mixin).') +
       dashboard.withUid($._config.pdbDashboardUid) +
       dashboard.withTags($._config.tags + ['kubernetes-core']) +
       dashboard.withTimezone('utc') +

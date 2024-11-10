@@ -385,9 +385,9 @@ local tbQueryOptions = tablePanel.queryOptions;
     'kubernetes-autoscaling-mixin-hpa.json':
       $._config.bypassDashboardValidation +
       dashboard.new(
-        'Kubernetes / Autoscaling / Horitzontal Pod Autoscaler',
+        'Kubernetes / Autoscaling / Horizontal Pod Autoscaler',
       ) +
-      dashboard.withDescription('A dashboard that monitors Kubernetes and focuses on giving a overview for horizontal pod autoscalers. It is created using the [Kubernetes / Autoscaling-mixin](https://github.com/adinhodovic/kubernetes-autoscaling-mixin).') +
+      dashboard.withDescription('A dashboard that monitors Kubernetes and focuses on giving a overview for horizontal pod autoscalers. It is created using the [kubernetes-autoscaling-mixin](https://github.com/adinhodovic/kubernetes-autoscaling-mixin).') +
       dashboard.withUid($._config.hpaDashboardUid) +
       dashboard.withTags($._config.tags + ['kubernetes-core']) +
       dashboard.withTimezone('utc') +

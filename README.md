@@ -52,8 +52,8 @@ brew install jsonnet
 Then, grab the mixin and its dependencies:
 
 ```sh
-git clone https://github.com/adinhodovic/kubernetes-autoscaling-mixin-mixin
-cd kubernetes-autoscaling-mixin-mixin
+git clone https://github.com/adinhodovic/kubernetes-autoscaling-mixin
+cd kubernetes-autoscaling-mixin
 jb install
 ```
 

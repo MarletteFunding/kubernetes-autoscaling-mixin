@@ -1117,7 +1117,7 @@ local pieQueryOptions = pieChartPanel.queryOptions;
       dashboard.new(
         'Kubernetes / Autoscaling / Karpenter / Overview',
       ) +
-      dashboard.withDescription('A dashboard that monitors Karpenter and focuses on giving a overview for Karpenter. It is created using the [Kubernetes Autoscaling-mixin](https://github.com/adinhodovic/kubernetes-autoscaling-mixin).') +
+      dashboard.withDescription('A dashboard that monitors Karpenter and focuses on giving a overview for Karpenter. It is created using the [kubernetes-autoscaling-mixin](https://github.com/adinhodovic/kubernetes-autoscaling-mixin).') +
       dashboard.withUid($._config.karpenterOverviewDashboardUid) +
       dashboard.withTags($._config.tags + ['karpenter']) +
       dashboard.withTimezone('utc') +
