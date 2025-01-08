@@ -47,7 +47,7 @@ local tbOverride = tbStandardOptions.override;
     local jobVariable =
       query.new(
         'job',
-        'label_values(kube_horizontalpodautoscaler_metadata_generation{}, job)'
+        'label_values(kube_poddisruptionbudget_status_current_healthy{}, job)'
       ) +
       query.withDatasourceFromVariable(datasourceVariable) +
       query.withSort(1) +
