@@ -85,7 +85,7 @@
                }
             ]
          },
-         "pluginVersion": "v11.1.0",
+         "pluginVersion": "v11.4.0",
          "targets": [
             {
                "datasource": {
@@ -205,7 +205,7 @@
                ]
             }
          },
-         "pluginVersion": "v11.1.0",
+         "pluginVersion": "v11.4.0",
          "targets": [
             {
                "datasource": {
@@ -254,7 +254,7 @@
                ]
             }
          },
-         "pluginVersion": "v11.1.0",
+         "pluginVersion": "v11.4.0",
          "targets": [
             {
                "datasource": {
@@ -303,7 +303,7 @@
                ]
             }
          },
-         "pluginVersion": "v11.1.0",
+         "pluginVersion": "v11.4.0",
          "targets": [
             {
                "datasource": {
@@ -352,7 +352,7 @@
                ]
             }
          },
-         "pluginVersion": "v11.1.0",
+         "pluginVersion": "v11.4.0",
          "targets": [
             {
                "datasource": {
@@ -465,7 +465,7 @@
                "sort": "desc"
             }
          },
-         "pluginVersion": "v11.1.0",
+         "pluginVersion": "v11.4.0",
          "targets": [
             {
                "datasource": {
@@ -526,7 +526,7 @@
             },
             "label": "Job",
             "name": "job",
-            "query": "label_values(kube_horizontalpodautoscaler_metadata_generation{}, job)",
+            "query": "label_values(kube_poddisruptionbudget_status_current_healthy{}, job)",
             "refresh": 2,
             "sort": 1,
             "type": "query"
