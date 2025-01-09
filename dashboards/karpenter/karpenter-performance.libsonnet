@@ -46,23 +46,9 @@ local tsLegend = tsOptions.legend;
       query.refresh.onLoad() +
       query.refresh.onTime(),
 
-    local nodePoolVariable =
-      query.new(
-        'nodepool',
-        'label_values(karpenter_nodepools_allowed_disruptions{job=~"$job"}, nodepool)'
-      ) +
-      query.withDatasourceFromVariable(datasourceVariable) +
-      query.withSort(1) +
-      query.generalOptions.withLabel('Node Pool') +
-      query.selectionOptions.withMulti(true) +
-      query.selectionOptions.withIncludeAll(true) +
-      query.refresh.onLoad() +
-      query.refresh.onTime(),
-
     local variables = [
       datasourceVariable,
       jobVariable,
-      nodePoolVariable,
     ],
 
     local karpenterClusterStateSyncedQuery = |||
