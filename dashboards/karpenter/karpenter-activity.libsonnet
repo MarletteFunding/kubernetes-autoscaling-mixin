@@ -136,13 +136,13 @@ local tsLegend = tsOptions.legend;
               job=~"$job",
             }[$__rate_interval]
           )
-        ) by (decision, reason, consolidation_type)
+        ) by (decision, reason)
       )
     |||,
 
     local karpenterNodesVoluntaryDisruptionDecisionsTimeSeriesPanel =
       timeSeriesPanel.new(
-        'Node Disruption Decisions by Reason, Decision, and Consolidation Type',
+        'Node Disruption Decisions by Reason and Decision',
       ) +
       tsQueryOptions.withTargets(
         [
@@ -151,7 +151,7 @@ local tsLegend = tsOptions.legend;
             karpenterNodesVoluntaryDisruptionDecisionsQuery,
           ) +
           prometheus.withLegendFormat(
-            '{{ decision }} - {{ reason }} - {{ consolidation_type }}'
+            '{{ decision }} - {{ reason }}'
           ) +
           prometheus.withInterval('1m'),
         ]
