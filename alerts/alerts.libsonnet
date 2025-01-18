@@ -26,6 +26,31 @@
             },
           },
           {
+            alert: 'KarpenterNodeClaimsTerminationDurationHigh',
+            expr: |||
+              sum(
+                karpenter_nodeclaims_termination_duration_seconds_sum{
+                  %(karpenterSelector)s
+                }
+              ) by (namespace, job, nodepool)
+              /
+              sum(
+                karpenter_nodeclaims_termination_duration_seconds_count{
+                  %(karpenterSelector)s
+                }
+              ) by (namespace, job, nodepool) > %(nodeclaimTerminationThreshold)s
+            ||| % $._config.karpenter,
+            labels: {
+              severity: 'warning',
+            },
+            'for': '15m',
+            annotations: {
+              summary: 'Karpenter Node Claims Termination Duration is High.',
+              description: 'The average node claim termination duration in Karpenter has exceeded %s minutes for more than 15 minutes in nodepool {{ $labels.nodepool }}. This may indicate cloud provider issues or improper instance termination handling.' % std.toString($._config.karpenter.nodeclaimTerminationThreshold / 60),
+              dashboard_url: $._config.karpenter.karpenterActivityDashboardUrl,
+            },
+          },
+          {
             alert: 'KarpenterNodepoolNearCapacity',
             annotations: {
               summary: 'Karpenter Nodepool near capacity.',
