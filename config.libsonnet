@@ -40,8 +40,10 @@ local annotation = g.dashboard.annotation;
       karpenterSelector: 'job=~"karpenter"',
 
       nodepoolCapacityThreshold: 75,
+      nodeclaimTerminationThreshold: 60 * 20,
 
       karpenterOverviewDashboardUrl: '%s/d/%s/kubernetes-autoscaling-karpenter-overview' % [this.grafanaUrl, this.karpenterOverviewDashboardUid],
+      karpenterActivityDashboardUrl: '%s/d/%s/kubernetes-autoscaling-karpenter-activity' % [this.grafanaUrl, this.karpenterActivityDashboardUid],
       karpenterPerformanceDashboardUrl: '%s/d/%s/kubernetes-autoscaling-karpenter-performance' % [this.grafanaUrl, this.karpenterPerformanceDashboardUid],
     },
 

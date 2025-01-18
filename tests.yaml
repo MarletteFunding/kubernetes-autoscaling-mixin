@@ -65,6 +65,29 @@ tests:
               dashboard_url: "https://grafana.com/d/kubernetes-autoscaling-mixin-ca-jkwq/kubernetes-autoscaling-cluster-autoscaler"
   - interval: 1m
     input_series:
+      - series: karpenter_nodeclaims_termination_duration_seconds_sum{namespace="karpenter", job="karpenter", nodepool="nodepool-a"}
+        values: "40000x20"
+      - series: karpenter_nodeclaims_termination_duration_seconds_count{namespace="karpenter", job="karpenter", nodepool="nodepool-a"}
+        values: "20x20"
+      - series: karpenter_nodeclaims_termination_duration_seconds_sum{namespace="karpenter", job="karpenter", nodepool="nodepool-b"}
+        values: "1x20"
+      - series: karpenter_nodeclaims_termination_duration_seconds_count{namespace="karpenter", job="karpenter", nodepool="nodepool-b"}
+        values: "1x20"
+    alert_rule_test:
+      - eval_time: 20m
+        alertname: KarpenterNodeClaimsTerminationDurationHigh
+        exp_alerts:
+          - exp_labels:
+              namespace: karpenter
+              job: karpenter
+              nodepool: nodepool-a
+              severity: warning
+            exp_annotations:
+              summary: "Karpenter Node Claims Termination Duration is High."
+              description: "The average node claim termination duration in Karpenter has exceeded 20 minutes for more than 15 minutes in nodepool nodepool-a. This may indicate cloud provider issues or improper instance termination handling."
+              dashboard_url: "https://grafana.com/d/kubernetes-autoscaling-mixin-kact-jkwq/kubernetes-autoscaling-karpenter-activity"
+  - interval: 1m
+    input_series:
       - series: 'cluster_autoscaler_unschedulable_pods_count{namespace="autoscaler", job="cluster-autoscaler"}'
         values: "1x15"
     alert_rule_test:
