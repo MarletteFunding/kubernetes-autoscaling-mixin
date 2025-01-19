@@ -10,6 +10,7 @@ local query = variable.query;
 local prometheus = g.query.prometheus;
 
 local statPanel = g.panel.stat;
+local timeSeriesPanel = g.panel.timeSeries;
 local tablePanel = g.panel.table;
 local pieChartPanel = g.panel.pieChart;
 
@@ -17,6 +18,14 @@ local pieChartPanel = g.panel.pieChart;
 local stOptions = statPanel.options;
 local stStandardOptions = statPanel.standardOptions;
 local stQueryOptions = statPanel.queryOptions;
+
+// Timeseries
+local tsOptions = timeSeriesPanel.options;
+local tsStandardOptions = timeSeriesPanel.standardOptions;
+local tsQueryOptions = timeSeriesPanel.queryOptions;
+local tsFieldConfig = timeSeriesPanel.fieldConfig;
+local tsCustom = tsFieldConfig.defaults.custom;
+local tsLegend = tsOptions.legend;
 
 // Table
 local tbOptions = tablePanel.options;
@@ -152,6 +161,126 @@ local pieQueryOptions = pieChartPanel.queryOptions;
       capacityTypeVariable,
       nodePoolVariable,
     ],
+
+    local karpenterClusterCpuAllocatableQuery = |||
+      sum(
+        karpenter_nodepools_usage{
+          job=~"$job",
+          nodepool=~"$nodepool",
+          resource_type="cpu"
+        }
+      )
+    |||,
+
+    local karpenterClusterCpuUtilizationTimeSeriesPanel =
+      timeSeriesPanel.new(
+        'Cluster CPU Utilization',
+      ) +
+      tsQueryOptions.withTargets(
+        [
+          prometheus.new(
+            '$datasource',
+            karpenterClusterCpuAllocatableQuery,
+          ) +
+          prometheus.withLegendFormat(
+            'Allocatable'
+          ),
+          prometheus.new(
+            '$datasource',
+            karpenterPodCpuRequestsQuery,
+          ) +
+          prometheus.withLegendFormat(
+            'Requested'
+          ),
+        ]
+      ) +
+      tsStandardOptions.withUnit('short') +
+      tsOptions.tooltip.withMode('multi') +
+      tsOptions.tooltip.withSort('desc') +
+      tsLegend.withShowLegend(true) +
+      tsLegend.withDisplayMode('table') +
+      tsLegend.withPlacement('right') +
+      tsLegend.withCalcs(['lastNotNull', 'mean', 'max']) +
+      tsLegend.withSortBy('Last *') +
+      tsLegend.withSortDesc(true) +
+      tsCustom.withSpanNulls(false),
+
+    local karpenterClusterMemoryAllocatableQuery = std.strReplace(karpenterClusterCpuAllocatableQuery, 'cpu', 'memory'),
+
+    local karpenterClusterMemoryUtilizationTimeSeriesPanel =
+      timeSeriesPanel.new(
+        'Cluster Memory Utilization',
+      ) +
+      tsQueryOptions.withTargets(
+        [
+          prometheus.new(
+            '$datasource',
+            karpenterClusterMemoryAllocatableQuery,
+          ) +
+          prometheus.withLegendFormat(
+            'Allocatable'
+          ),
+          prometheus.new(
+            '$datasource',
+            karpenterPodMemoryRequestsQuery,
+          ) +
+          prometheus.withLegendFormat(
+            'Requested'
+          ),
+        ]
+      ) +
+      stStandardOptions.withUnit('bytes') +
+      tsOptions.tooltip.withMode('multi') +
+      tsOptions.tooltip.withSort('desc') +
+      tsLegend.withShowLegend(true) +
+      tsLegend.withDisplayMode('table') +
+      tsLegend.withPlacement('right') +
+      tsLegend.withCalcs(['lastNotNull', 'mean', 'max']) +
+      tsLegend.withSortBy('Last *') +
+      tsLegend.withSortDesc(true) +
+      tsCustom.withSpanNulls(false),
+
+    local karpenterNodePoolsUtilizationByNodePoolQuery = |||
+      sum(
+        karpenter_nodepools_usage{
+          job=~"$job",
+          nodepool=~"$nodepool",
+        }
+      ) by (nodepool, resource_type)
+      /
+      sum(
+        karpenter_nodepools_limit{
+          job=~"$job",
+          nodepool=~"$nodepool",
+        }
+      ) by (nodepool, resource_type) * 100
+    |||,
+
+    local karpenterNodePoolsUtilizationTimeSeriesPanel =
+      timeSeriesPanel.new(
+        'Node Pool Usage % of Limit',
+      ) +
+      tsQueryOptions.withTargets(
+        [
+          prometheus.new(
+            '$datasource',
+            karpenterNodePoolsUtilizationByNodePoolQuery,
+          ) +
+          prometheus.withLegendFormat(
+            '{{ nodepool }} / {{ resource_type }}'
+          ),
+        ]
+      ) +
+      stStandardOptions.withUnit('percent') +
+      tsOptions.tooltip.withMode('multi') +
+      tsOptions.tooltip.withSort('desc') +
+      tsLegend.withShowLegend(true) +
+      tsLegend.withDisplayMode('table') +
+      tsLegend.withPlacement('right') +
+      tsLegend.withCalcs(['lastNotNull', 'mean', 'max']) +
+      tsLegend.withSortBy('Last *') +
+      tsLegend.withSortDesc(true) +
+      tsCustom.withSpanNulls(false),
 
     local karpenterNodePoolsQuery = |||
       count(
@@ -1092,6 +1221,11 @@ local pieQueryOptions = pieChartPanel.queryOptions;
         ),
       ]),
 
+    local karpenterClusterSummaryRow =
+      row.new(
+        title='Cluster Summary',
+      ),
+
     local karpenterNodePoolSummaryRow =
       row.new(
         title='Node Pool Summary',
@@ -1133,9 +1267,25 @@ local pieQueryOptions = pieChartPanel.queryOptions;
       ) +
       dashboard.withPanels(
         [
-          karpenterNodePoolSummaryRow +
+          karpenterClusterSummaryRow +
           row.gridPos.withX(0) +
           row.gridPos.withY(0) +
+          row.gridPos.withW(24) +
+          row.gridPos.withH(1),
+        ] +
+        grid.makeGrid(
+          [
+            karpenterClusterCpuUtilizationTimeSeriesPanel,
+            karpenterClusterMemoryUtilizationTimeSeriesPanel,
+          ],
+          panelWidth=12,
+          panelHeight=5,
+          startY=1
+        ) +
+        [
+          karpenterNodePoolSummaryRow +
+          row.gridPos.withX(0) +
+          row.gridPos.withY(6) +
           row.gridPos.withW(24) +
           row.gridPos.withH(1),
         ] +
@@ -1150,7 +1300,15 @@ local pieQueryOptions = pieChartPanel.queryOptions;
           ],
           panelWidth=4,
           panelHeight=3,
-          startY=1
+          startY=7
+        ) +
+        grid.makeGrid(
+          [
+            karpenterNodePoolsUtilizationTimeSeriesPanel,
+          ],
+          panelWidth=24,
+          panelHeight=8,
+          startY=10
         ) +
         grid.makeGrid(
           [
@@ -1160,7 +1318,7 @@ local pieQueryOptions = pieChartPanel.queryOptions;
           ],
           panelWidth=8,
           panelHeight=5,
-          startY=4
+          startY=18
         ) +
         grid.makeGrid(
           [
@@ -1171,12 +1329,12 @@ local pieQueryOptions = pieChartPanel.queryOptions;
           ],
           panelWidth=6,
           panelHeight=5,
-          startY=9
+          startY=23
         ) +
         [
           karpenterPodSummaryRow +
           row.gridPos.withX(0) +
-          row.gridPos.withY(14) +
+          row.gridPos.withY(28) +
           row.gridPos.withW(24) +
           row.gridPos.withH(1),
         ] +
@@ -1189,7 +1347,7 @@ local pieQueryOptions = pieChartPanel.queryOptions;
           ],
           panelWidth=6,
           panelHeight=3,
-          startY=15
+          startY=29
         ) +
         grid.makeGrid(
           [
@@ -1199,27 +1357,27 @@ local pieQueryOptions = pieChartPanel.queryOptions;
           ],
           panelWidth=8,
           panelHeight=5,
-          startY=18
+          startY=32
         ) +
         [
           karpenterNodePoolsRow +
           row.gridPos.withX(0) +
-          row.gridPos.withY(23) +
+          row.gridPos.withY(36) +
           row.gridPos.withW(24) +
           row.gridPos.withH(1),
           karpenterNodePoolTable +
           tablePanel.gridPos.withX(0) +
-          tablePanel.gridPos.withY(24) +
+          tablePanel.gridPos.withY(37) +
           tablePanel.gridPos.withW(24) +
           tablePanel.gridPos.withH(8),
           karpenterNodesRow +
           row.gridPos.withX(0) +
-          row.gridPos.withY(31) +
+          row.gridPos.withY(45) +
           row.gridPos.withW(24) +
           row.gridPos.withH(1),
           karpenterNodeTable +
           tablePanel.gridPos.withX(0) +
-          tablePanel.gridPos.withY(32) +
+          tablePanel.gridPos.withY(46) +
           tablePanel.gridPos.withW(24) +
           tablePanel.gridPos.withH(8),
         ],
