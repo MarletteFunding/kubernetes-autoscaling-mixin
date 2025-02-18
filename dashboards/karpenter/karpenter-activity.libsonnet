@@ -189,12 +189,10 @@ local tsLegend = tsOptions.legend;
     local karpenterNodesVoluntaryDisruptionEligibleQuery = |||
       round(
         sum(
-          increase(
-            karpenter_voluntary_disruption_eligible_nodes{
-              %(clusterLabel)s="$cluster",
-              job=~"$job",
-            }[$__rate_interval]
-          )
+          karpenter_voluntary_disruption_eligible_nodes{
+            %(clusterLabel)s="$cluster",
+            job=~"$job"
+          }
         ) by (reason)
       )
     ||| % $._config,

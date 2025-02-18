@@ -231,7 +231,7 @@
                   "type": "prometheus",
                   "uid": "$datasource"
                },
-               "expr": "round(\n  sum(\n    increase(\n      karpenter_voluntary_disruption_eligible_nodes{\n        cluster=\"$cluster\",\n        job=~\"$job\",\n      }[$__rate_interval]\n    )\n  ) by (reason)\n)\n",
+               "expr": "round(\n  sum(\n    karpenter_voluntary_disruption_eligible_nodes{\n      cluster=\"$cluster\",\n      job=~\"$job\"\n    }\n  ) by (reason)\n)\n",
                "interval": "1m",
                "legendFormat": "{{ reason }}"
             }
