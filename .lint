@@ -2,6 +2,8 @@
 exclusions:
   template-job-rule:
     reason: Jobs are not set to multi in our case.
+  target-job-rule:
+    reason: Some dashboard use recording rules
   template-instance-rule:
     reason: We don't use instances.
   panel-datasource-rule:
