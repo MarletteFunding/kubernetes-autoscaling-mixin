@@ -117,7 +117,7 @@ local tbOverride = tbStandardOptions.override;
     ],
 
     local vpaCpuRecommendationTargetQuery = |||
-      sum(
+      max(
         kube_customresource_verticalpodautoscaler_status_recommendation_containerrecommendations_target{
           %(clusterLabel)s="$cluster",
           job=~"$job",
@@ -342,7 +342,7 @@ local tbOverride = tbStandardOptions.override;
       ]),
 
     local vpaCpuRecommendationTargetOverTimeQuery = |||
-      avg(
+      max(
         kube_customresource_verticalpodautoscaler_status_recommendation_containerrecommendations_target{
           %(clusterLabel)s="$cluster",
           job=~"$job",
@@ -367,7 +367,7 @@ local tbOverride = tbStandardOptions.override;
       ) by (container)
     ||| % $._config,
     local vpaCpuRequestOverTimeQuery = |||
-      avg(
+      max(
         kube_pod_container_resource_requests{
           %(clusterLabel)s="$cluster",
           job=~"$job",
@@ -445,13 +445,12 @@ local tbOverride = tbStandardOptions.override;
     local vpaMemoryRecommendationLowerBoundOverTimeQuery = std.strReplace(vpaMemoryRecommendationTargetOverTimeQuery, 'target', 'lowerbound'),
     local vpaMemoryRecommendationUpperBoundOverTimeQuery = std.strReplace(vpaMemoryRecommendationTargetOverTimeQuery, 'target', 'upperbound'),
     local vpaMemoryUsageOverTimeQuery = |||
-      sum(
+      avg(
         container_memory_working_set_bytes{
           %(clusterLabel)s="$cluster",
-          job=~"$job",
-          namespace="$namespace",
-          pod=~"$vpa(.+)",
-          container="$container"
+          namespace=~"$namespace",
+          pod=~"$vpa-.*",
+          container=~"$container"
         }
       ) by (container)
     ||| % $._config,
