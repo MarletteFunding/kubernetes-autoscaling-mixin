@@ -342,39 +342,39 @@ local tbOverride = tbStandardOptions.override;
       ]),
 
     local vpaCpuRecommendationTargetOverTimeQuery = |||
-      sum(
+      avg(
         kube_customresource_verticalpodautoscaler_status_recommendation_containerrecommendations_target{
           %(clusterLabel)s="$cluster",
           job=~"$job",
           namespace=~"$namespace",
           resource="cpu",
-          verticalpodautoscaler="$vpa",
-          container="$container"
+          verticalpodautoscaler=~"$vpa",
+          container=~"$container"
         }
       ) by (job, namespace, verticalpodautoscaler, container, resource)
     ||| % $._config,
     local vpaCpuRecommendationLowerBoundOverTimeQuery = std.strReplace(vpaCpuRecommendationTargetOverTimeQuery, 'target', 'lowerbound'),
     local vpaCpuRecommendationUpperBoundOverTimeQuery = std.strReplace(vpaCpuRecommendationTargetOverTimeQuery, 'target', 'upperbound'),
     local vpaCpuUsageOverTimeQuery = |||
-      sum(
+      avg(
         node_namespace_pod_container:container_cpu_usage_seconds_total:sum_irate{
           %(clusterLabel)s="$cluster",
-          job=~"$job",
-          namespace="$namespace",
-          pod=~"$vpa-(.+)",
-          container="$container"
+          namespace=~"$namespace",
+          pod=~"$vpa-.*",
+          container=~"$container",
+          container!=""
         }
       ) by (container)
     ||| % $._config,
     local vpaCpuRequestOverTimeQuery = |||
-      sum(
+      avg(
         kube_pod_container_resource_requests{
           %(clusterLabel)s="$cluster",
           job=~"$job",
-          namespace="$namespace",
-          pod=~"$vpa-(.+)",
-          resource="cpu",
-          container="$container"
+          namespace=~"$namespace",
+          pod=~"$vpa-.*",
+          resource=~"cpu",
+          container=~"$container"
         }
       ) by (container)
     ||| % $._config,
