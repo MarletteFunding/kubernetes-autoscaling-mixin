@@ -644,7 +644,7 @@ local tbOverride = tbStandardOptions.override;
 
     local vpaNamespaceSummaryRow =
       row.new(
-        title='$namespace Summary',
+        title='Namespace $namespace Summary',
       ),
 
     local vpaSummaryRow =
