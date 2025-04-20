@@ -42,7 +42,14 @@ local tbOverride = tbStandardOptions.override;
         'datasource',
         'prometheus',
       ) +
-      datasource.generalOptions.withLabel('Data source'),
+      datasource.generalOptions.withLabel('Data source') +
+      {
+        current: {
+          selected: true,
+          text: $._config.datasourceName,
+          value: $._config.datasourceName,
+        },
+      },
 
     local clusterVariable =
       query.new(
@@ -116,6 +123,34 @@ local tbOverride = tbStandardOptions.override;
       containerVariable,
     ],
 
+    local vpaCpuRequestsQuery = |||
+      max(
+        label_replace(
+          max(
+            kube_pod_container_resource_requests{
+              %(clusterLabel)s="$cluster",
+              job=~"$job",
+              namespace=~"$namespace",
+              resource="cpu"
+            }
+          ) by (job, namespace, pod, container, resource),
+          "verticalpodautoscaler", "$1", "pod", "^(.*?)(?:-[a-f0-9]{8,10}-[a-z0-9]{5}|-[0-9]+|-[a-z0-9]{5})$"
+        )
+        + on(job, namespace, container, resource, verticalpodautoscaler) group_left()
+        0 *
+        max(
+          kube_customresource_verticalpodautoscaler_status_recommendation_containerrecommendations_target{
+            %(clusterLabel)s="$cluster",
+            job=~"$job",
+            namespace=~"$namespace",
+            resource="cpu"
+          }
+        ) by (job, namespace, verticalpodautoscaler, container, resource)
+      )
+      by (job, namespace, verticalpodautoscaler, container, resource)
+    ||| % $._config,
+    local vpaCpuLimitsQuery = std.strReplace(vpaCpuRequestsQuery, 'requests', 'limits'),
+
     local vpaCpuRecommendationTargetQuery = |||
       max(
         kube_customresource_verticalpodautoscaler_status_recommendation_containerrecommendations_target{
@@ -142,10 +177,28 @@ local tbOverride = tbStandardOptions.override;
         [
           prometheus.new(
             '$datasource',
+            vpaCpuRequestsQuery,
+          ) +
+          prometheus.withLegendFormat(
+            'Requests'
+          ) +
+          prometheus.withInstant(true) +
+          prometheus.withFormat('table'),
+          prometheus.new(
+            '$datasource',
+            vpaCpuLimitsQuery,
+          ) +
+          prometheus.withLegendFormat(
+            'Limits'
+          ) +
+          prometheus.withInstant(true) +
+          prometheus.withFormat('table'),
+          prometheus.new(
+            '$datasource',
             vpaCpuRecommendationLowerBoundQuery,
           ) +
           prometheus.withLegendFormat(
-            'CPU Lower Bound'
+            'Lower Bound'
           ) +
           prometheus.withInstant(true) +
           prometheus.withFormat('table'),
@@ -154,7 +207,7 @@ local tbOverride = tbStandardOptions.override;
             vpaCpuRecommendationTargetQuery,
           ) +
           prometheus.withLegendFormat(
-            'CPU Target'
+            'Target'
           ) +
           prometheus.withInstant(true) +
           prometheus.withFormat('table'),
@@ -165,7 +218,7 @@ local tbOverride = tbStandardOptions.override;
           prometheus.withInstant(true) +
           prometheus.withFormat('table') +
           prometheus.withLegendFormat(
-            'CPU Upper Bound'
+            'Upper Bound'
           ),
         ]
       ) +
@@ -179,32 +232,35 @@ local tbOverride = tbStandardOptions.override;
         tbQueryOptions.transformation.withOptions(
           {
             renameByName: {
-              namespace: 'Namespace',
               verticalpodautoscaler: 'Vertical Pod Autoscaler',
               container: 'Container',
               resource: 'Resource',
-              'Value #A': 'CPU Lower Bound',
-              'Value #B': 'CPU Target',
-              'Value #C': 'CPU Upper Bound',
+              'Value #A': 'Requests',
+              'Value #B': 'Limits',
+              'Value #C': 'Lower Bound',
+              'Value #D': 'Target',
+              'Value #E': 'Upper Bound',
             },
             indexByName: {
-              namespace: 0,
-              verticalpodautoscaler: 1,
-              container: 2,
-              resource: 3,
-              'Value #A': 4,
-              'Value #B': 5,
-              'Value #C': 6,
+              verticalpodautoscaler: 0,
+              container: 1,
+              resource: 2,
+              'Value #A': 3,
+              'Value #B': 4,
+              'Value #C': 5,
+              'Value #D': 6,
+              'Value #E': 7,
             },
             excludeByName: {
               Time: true,
               job: true,
+              namespace: true,
             },
           }
         ),
       ]) +
       tbStandardOptions.withOverrides([
-        tbOverride.byName.new('CPU Lower Bound') +
+        tbOverride.byName.new('Lower Bound') +
         tbOverride.byName.withPropertiesFromOptions(
           tbFieldConfig.defaults.custom.withCellOptions(
             { type: 'color-background' }  // TODO(adinhodovic): Use jsonnet lib
@@ -213,7 +269,7 @@ local tbOverride = tbStandardOptions.override;
           tbStandardOptions.color.withFixedColor('dark-red') +
           tbFieldConfig.defaults.custom.cellOptions.TableBarGaugeCellOptions.withMode('basic'),
         ),
-        tbOverride.byName.new('CPU Target') +
+        tbOverride.byName.new('Target') +
         tbOverride.byName.withPropertiesFromOptions(
           tbFieldConfig.defaults.custom.withCellOptions(
             { type: 'color-background' }  // TODO(adinhodovic): Use jsonnet lib
@@ -222,7 +278,7 @@ local tbOverride = tbStandardOptions.override;
           tbStandardOptions.color.withFixedColor('yellow') +
           tbFieldConfig.defaults.custom.cellOptions.TableBarGaugeCellOptions.withMode('basic'),
         ),
-        tbOverride.byName.new('CPU Upper Bound') +
+        tbOverride.byName.new('Upper Bound') +
         tbOverride.byName.withPropertiesFromOptions(
           tbFieldConfig.defaults.custom.withCellOptions(
             { type: 'color-background' }  // TODO(adinhodovic): Use jsonnet lib
@@ -233,6 +289,8 @@ local tbOverride = tbStandardOptions.override;
         ),
       ]),
 
+    local vpaMemoryRequestsQuery = std.strReplace(vpaCpuRequestsQuery, 'cpu', 'memory'),
+    local vpaMemoryLimitsQuery = std.strReplace(vpaCpuLimitsQuery, 'cpu', 'memory'),
     local vpaMemoryRecommendationTargetQuery = std.strReplace(vpaCpuRecommendationTargetQuery, 'cpu', 'memory'),
     local vpaMemoryRecommendationLowerBoundQuery = std.strReplace(vpaMemoryRecommendationTargetQuery, 'target', 'lowerbound'),
     local vpaMemoryRecommendationUpperBoundQuery = std.strReplace(vpaMemoryRecommendationTargetQuery, 'target', 'upperbound'),
@@ -250,10 +308,28 @@ local tbOverride = tbStandardOptions.override;
         [
           prometheus.new(
             '$datasource',
+            vpaMemoryRequestsQuery,
+          ) +
+          prometheus.withLegendFormat(
+            'Requests'
+          ) +
+          prometheus.withInstant(true) +
+          prometheus.withFormat('table'),
+          prometheus.new(
+            '$datasource',
+            vpaMemoryLimitsQuery,
+          ) +
+          prometheus.withLegendFormat(
+            'Limits'
+          ) +
+          prometheus.withInstant(true) +
+          prometheus.withFormat('table'),
+          prometheus.new(
+            '$datasource',
             vpaMemoryRecommendationLowerBoundQuery,
           ) +
           prometheus.withLegendFormat(
-            'Memory Lower Bound'
+            'Lower Bound'
           ) +
           prometheus.withInstant(true) +
           prometheus.withFormat('table'),
@@ -262,7 +338,7 @@ local tbOverride = tbStandardOptions.override;
             vpaMemoryRecommendationTargetQuery,
           ) +
           prometheus.withLegendFormat(
-            'Memory Target'
+            'Target'
           ) +
           prometheus.withInstant(true) +
           prometheus.withFormat('table'),
@@ -273,7 +349,7 @@ local tbOverride = tbStandardOptions.override;
           prometheus.withInstant(true) +
           prometheus.withFormat('table') +
           prometheus.withLegendFormat(
-            'Memory Upper Bound'
+            'Upper Bound'
           ),
         ]
       ) +
@@ -287,24 +363,27 @@ local tbOverride = tbStandardOptions.override;
         tbQueryOptions.transformation.withOptions(
           {
             renameByName: {
-              namespace: 'Namespace',
               verticalpodautoscaler: 'Vertical Pod Autoscaler',
               container: 'Container',
               resource: 'Resource',
-              'Value #A': 'Memory Lower Bound',
-              'Value #B': 'Memory Target',
-              'Value #C': 'Memory Upper Bound',
+              'Value #A': 'Requests',
+              'Value #B': 'Limits',
+              'Value #C': 'Lower Bound',
+              'Value #D': 'Target',
+              'Value #E': 'Upper Bound',
             },
             indexByName: {
-              namespace: 0,
-              verticalpodautoscaler: 1,
-              container: 2,
-              resource: 3,
-              'Value #A': 4,
-              'Value #B': 5,
-              'Value #C': 6,
+              verticalpodautoscaler: 0,
+              container: 1,
+              resource: 2,
+              'Value #A': 3,
+              'Value #B': 4,
+              'Value #C': 5,
+              'Value #D': 6,
+              'Value #E': 7,
             },
             excludeByName: {
+              namespace: true,
               Time: true,
               job: true,
             },
@@ -312,7 +391,7 @@ local tbOverride = tbStandardOptions.override;
         ),
       ]) +
       tbStandardOptions.withOverrides([
-        tbOverride.byName.new('Memory Lower Bound') +
+        tbOverride.byName.new('Lower Bound') +
         tbOverride.byName.withPropertiesFromOptions(
           tbFieldConfig.defaults.custom.withCellOptions(
             { type: 'color-background' }  // TODO(adinhodovic): Use jsonnet lib
@@ -321,7 +400,7 @@ local tbOverride = tbStandardOptions.override;
           tbStandardOptions.color.withFixedColor('dark-red') +
           tbFieldConfig.defaults.custom.cellOptions.TableBarGaugeCellOptions.withMode('basic'),
         ),
-        tbOverride.byName.new('Memory Target') +
+        tbOverride.byName.new('Target') +
         tbOverride.byName.withPropertiesFromOptions(
           tbFieldConfig.defaults.custom.withCellOptions(
             { type: 'color-background' }  // TODO(adinhodovic): Use jsonnet lib
@@ -330,7 +409,7 @@ local tbOverride = tbStandardOptions.override;
           tbStandardOptions.color.withFixedColor('yellow') +
           tbFieldConfig.defaults.custom.cellOptions.TableBarGaugeCellOptions.withMode('basic'),
         ),
-        tbOverride.byName.new('Memory Upper Bound') +
+        tbOverride.byName.new('Upper Bound') +
         tbOverride.byName.withPropertiesFromOptions(
           tbFieldConfig.defaults.custom.withCellOptions(
             { type: 'color-background' }  // TODO(adinhodovic): Use jsonnet lib
@@ -668,8 +747,11 @@ local tbOverride = tbStandardOptions.override;
       dashboard.withVariables(variables) +
       dashboard.withLinks(
         [
-          dashboard.link.dashboards.new('Kubernetes / Autoscaling', $._config.tags + ['kubernetes-core']) +
-          dashboard.link.link.options.withTargetBlank(true),
+          dashboard.link.dashboards.new('Kubernetes / Autoscaling', $._config.tags) +
+          dashboard.link.link.options.withTargetBlank(true) +
+          dashboard.link.link.options.withAsDropdown(true) +
+          dashboard.link.link.options.withIncludeVars(true) +
+          dashboard.link.link.options.withKeepTime(true),
         ]
       ) +
       dashboard.withPanels(
