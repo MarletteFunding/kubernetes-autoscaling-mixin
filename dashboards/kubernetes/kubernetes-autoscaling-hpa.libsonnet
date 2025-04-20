@@ -39,7 +39,14 @@ local tbQueryOptions = tablePanel.queryOptions;
         'datasource',
         'prometheus',
       ) +
-      datasource.generalOptions.withLabel('Data source'),
+      datasource.generalOptions.withLabel('Data source') +
+      {
+        current: {
+          selected: true,
+          text: $._config.datasourceName,
+          value: $._config.datasourceName,
+        },
+      },
 
     local clusterVariable =
       query.new(
@@ -420,8 +427,11 @@ local tbQueryOptions = tablePanel.queryOptions;
       dashboard.withVariables(variables) +
       dashboard.withLinks(
         [
-          dashboard.link.dashboards.new('Kubernetes / Autoscaling', $._config.tags + ['kubernetes-core']) +
-          dashboard.link.link.options.withTargetBlank(true),
+          dashboard.link.dashboards.new('Kubernetes / Autoscaling', $._config.tags) +
+          dashboard.link.link.options.withTargetBlank(true) +
+          dashboard.link.link.options.withAsDropdown(true) +
+          dashboard.link.link.options.withIncludeVars(true) +
+          dashboard.link.link.options.withKeepTime(true),
         ]
       ) +
       dashboard.withPanels(
