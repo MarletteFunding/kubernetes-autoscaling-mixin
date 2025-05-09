@@ -1,4 +1,5 @@
 {
+  local clusterVariableQueryString = if $._config.showMultiCluster then '&var-%(clusterLabel)s={{ $labels.%(clusterLabel)s}}' % $._config else '',
   prometheusAlerts+:: {
     groups+: std.prune([
       if $._config.karpenter.enabled then {
@@ -82,7 +83,7 @@
             annotations: {
               summary: 'Cluster Autoscaler Node Count near Capacity.',
               description: 'The node count for the cluster autoscaler job {{ $labels.job }} is reaching max limit. Consider scaling node groups.',
-              dashboard_url: $._config.clusterAutoscaler.clusterAutoscalerDashboardUrl,
+              dashboard_url: $._config.clusterAutoscaler.clusterAutoscalerDashboardUrl + clusterVariableQueryString,
             },
             expr: |||
               sum (
@@ -91,9 +92,9 @@
               /
               sum (
                 cluster_autoscaler_max_nodes_count{%(clusterAutoscalerSelector)s}
-              ) by (namespace, job)
+              ) by (%(clusterLabel)s, namespace, job)
               * 100 > %(nodeCountCapacityThreshold)s
-            ||| % $._config.clusterAutoscaler,
+            ||| % $._config,
             'for': '15m',
             labels: {
               severity: 'warning',
@@ -104,14 +105,14 @@
             annotations: {
               summary: 'Pods Pending Scheduling - Cluster Node Group Scaling Required',
               description: 'The cluster currently has unschedulable pods, indicating resource shortages. Consider adding more nodes or increasing node group capacity.',
-              dashboard_url: $._config.clusterAutoscaler.clusterAutoscalerDashboardUrl,
+              dashboard_url: $._config.clusterAutoscaler.clusterAutoscalerDashboardUrl + clusterVariableQueryString,
             },
             expr: |||
               sum (
                 cluster_autoscaler_unschedulable_pods_count{%(clusterAutoscalerSelector)s}
-              ) by (namespace, job)
+              ) by (%(clusterLabel)s, namespace, job)
               > 0
-            ||| % $._config.clusterAutoscaler,
+            ||| % $._config,
             'for': '15m',
             labels: {
               severity: 'warning',
