@@ -94,7 +94,7 @@
                 cluster_autoscaler_max_nodes_count{%(clusterAutoscalerSelector)s}
               ) by (%(clusterLabel)s, namespace, job)
               * 100 > %(nodeCountCapacityThreshold)s
-            ||| % $._config,
+            ||| % {clusterLabel: $._config.clusterLabel, clusterAutoscalerSelector: $._config.clusterAutoscaler.clusterAutoscalerSelector},
             'for': '15m',
             labels: {
               severity: 'warning',
@@ -112,7 +112,7 @@
                 cluster_autoscaler_unschedulable_pods_count{%(clusterAutoscalerSelector)s}
               ) by (%(clusterLabel)s, namespace, job)
               > 0
-            ||| % $._config,
+            ||| % {clusterLabel: $._config.clusterLabel, clusterAutoscalerSelector: $._config.clusterAutoscaler.clusterAutoscalerSelector},
             'for': '15m',
             labels: {
               severity: 'warning',
