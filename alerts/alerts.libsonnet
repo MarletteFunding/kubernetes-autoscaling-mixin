@@ -94,7 +94,7 @@
                 cluster_autoscaler_max_nodes_count{%(clusterAutoscalerSelector)s}
               ) by (%(clusterLabel)s, namespace, job)
               * 100 > %(nodeCountCapacityThreshold)s
-            ||| % {clusterLabel: $._config.clusterLabel, clusterAutoscalerSelector: $._config.clusterAutoscaler.clusterAutoscalerSelector},
+            ||| % {clusterLabel: $._config.clusterLabel, clusterAutoscalerSelector: $._config.clusterAutoscaler.clusterAutoscalerSelector, nodeCountCapacityThreshold: $._config.clusterAutoscaler.nodeCountCapacityThreshold},
             'for': '15m',
             labels: {
               severity: 'warning',
