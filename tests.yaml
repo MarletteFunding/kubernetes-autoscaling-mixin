@@ -9,6 +9,8 @@ tests:
     input_series:
       - series: 'karpenter_cloudprovider_errors_total{namespace="karpenter", job="karpenter", provider="aws", controller="nodeclaim.disruption", method="Get"}'
         values: "1+1x20"
+      - series: 'karpenter_cloudprovider_errors_total{namespace="karpenter", job="karpenter", provider="aws", controller="nodeclaim.termination", method="Get"}'
+        values: "1+1x20"
     alert_rule_test:
       - eval_time: 20m
         alertname: KarpenterCloudProviderErrors
