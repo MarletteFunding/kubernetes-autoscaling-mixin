@@ -13,7 +13,9 @@
               sum(
                 increase(
                   karpenter_cloudprovider_errors_total{
-                    %(karpenterSelector)s, controller!~"nodeclaim.termination|node.termination", error!="NodeClaimNotFoundError"
+                    %(karpenterSelector)s,
+                    controller!~"nodeclaim.termination|node.termination",
+                    error!="NodeClaimNotFoundError"
                   }[5m]
                 )
               ) by (%(clusterLabel)s, namespace, job, provider, controller, method) > 0
