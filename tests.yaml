@@ -7,7 +7,7 @@ tests:
   # Karpenter
   - interval: 1m
     input_series:
-      - series: 'karpenter_cloudprovider_errors_total{namespace="karpenter", job="karpenter", provider="aws", controller="node.termination", method="Get"}'
+      - series: 'karpenter_cloudprovider_errors_total{namespace="karpenter", job="karpenter", provider="aws", controller="nodeclaim.disruption", method="Get"}'
         values: "1+1x20"
     alert_rule_test:
       - eval_time: 20m
@@ -17,12 +17,12 @@ tests:
               namespace: karpenter
               job: karpenter
               provider: aws
-              controller: node.termination
+              controller: nodeclaim.disruption
               method: Get
               severity: warning
             exp_annotations:
               summary: "Karpenter has Cloud Provider Errors."
-              description: "The Karpenter provider aws with the controller node.termination has errors with the method Get."
+              description: "The Karpenter provider aws with the controller nodeclaim.disruption has errors with the method Get."
               dashboard_url: "https://grafana.com/d/kubernetes-autoscaling-mixin-kperf-jkwq/kubernetes-autoscaling-karpenter-performance"
   - interval: 1m
     input_series:
