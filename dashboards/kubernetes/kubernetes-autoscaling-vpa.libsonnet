@@ -123,6 +123,7 @@ local tbOverride = tbStandardOptions.override;
       containerVariable,
     ],
 
+    local vpaRequestConfig = $._config.vpa { clusterLabel: $._config.clusterLabel },
     local vpaCpuRequestsQuery = |||
       max(
         label_replace(
@@ -134,7 +135,7 @@ local tbOverride = tbStandardOptions.override;
               resource="cpu"
             }
           ) by (job, namespace, pod, container, resource),
-          "verticalpodautoscaler", "$1", "pod", "^(.*?)(?:-[a-f0-9]{8,10}-[a-z0-9]{5}|-[0-9]+|-[a-z0-9]{5})$"
+          "verticalpodautoscaler", "%(vpaPrefix)s$1", "pod", "^(.*?)(?:-[a-f0-9]{8,10}-[a-z0-9]{5}|-[0-9]+|-[a-z0-9]{5,16})$"
         )
         + on(job, namespace, container, resource, verticalpodautoscaler) group_left()
         0 *
@@ -148,7 +149,7 @@ local tbOverride = tbStandardOptions.override;
         ) by (job, namespace, verticalpodautoscaler, container, resource)
       )
       by (job, namespace, verticalpodautoscaler, container, resource)
-    ||| % $._config,
+    ||| % vpaRequestConfig,
     local vpaCpuLimitsQuery = std.strReplace(vpaCpuRequestsQuery, 'requests', 'limits'),
 
     local vpaCpuRecommendationTargetQuery = |||
