@@ -31,6 +31,8 @@ local annotation = g.dashboard.annotation;
 
     vpa: {
       enabled: true,
+      // Optional: If your VPA names are not based only from the pod name and include a prefix, set it here.
+      vpaPrefix: '',
     },
 
     clusterAutoscaler: {
