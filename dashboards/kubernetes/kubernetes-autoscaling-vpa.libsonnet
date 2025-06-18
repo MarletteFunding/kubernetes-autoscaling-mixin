@@ -37,6 +37,8 @@ local tbOverride = tbStandardOptions.override;
 {
   grafanaDashboards+:: std.prune({
 
+    local byCluster(labels) = {'clusterByLabel': if $._config.vpa.clusterAggregation then 'cluster, ' else ''} + labels,
+
     local datasourceVariable =
       datasource.new(
         'datasource',
@@ -62,15 +64,23 @@ local tbOverride = tbStandardOptions.override;
       query.refresh.onLoad() +
       query.refresh.onTime() +
       (
-        if $._config.showMultiCluster
-        then query.generalOptions.showOnDashboard.withLabelAndValue()
+        if $._config.showMultiCluster then
+        (
+            if $._config.vpa.clusterAggregation then
+            (
+              query.generalOptions.showOnDashboard.withLabelAndValue() +
+              query.withSort(1) +
+              query.selectionOptions.withMulti(true)
+            )
+            else query.generalOptions.showOnDashboard.withLabelAndValue()
+        )
         else query.generalOptions.showOnDashboard.withNothing()
       ),
 
     local jobVariable =
       query.new(
         'job',
-        'label_values(kube_customresource_verticalpodautoscaler_labels{%(clusterLabel)s="$cluster"}, job)' % $._config,
+        'label_values(kube_customresource_verticalpodautoscaler_labels{%(clusterLabel)s=~"$cluster"}, job)' % $._config,
       ) +
       query.withDatasourceFromVariable(datasourceVariable) +
       query.withSort(1) +
@@ -81,7 +91,7 @@ local tbOverride = tbStandardOptions.override;
     local namespaceVariable =
       query.new(
         'namespace',
-        'label_values(kube_customresource_verticalpodautoscaler_labels{%(clusterLabel)s="$cluster", job=~"$job"}, namespace)' % $._config
+        'label_values(kube_customresource_verticalpodautoscaler_labels{%(clusterLabel)s=~"$cluster", job=~"$job"}, namespace)' % $._config
       ) +
       query.withDatasourceFromVariable(datasourceVariable) +
       query.withSort(1) +
@@ -93,7 +103,7 @@ local tbOverride = tbStandardOptions.override;
     local vpaVariable =
       query.new(
         'vpa',
-        'label_values(kube_customresource_verticalpodautoscaler_labels{%(clusterLabel)s="$cluster", job=~"$job", namespace=~"$namespace"}, verticalpodautoscaler)' % $._config
+        'label_values(kube_customresource_verticalpodautoscaler_labels{%(clusterLabel)s=~"$cluster", job=~"$job", namespace=~"$namespace"}, verticalpodautoscaler)' % $._config
       ) +
       query.withDatasourceFromVariable(datasourceVariable) +
       query.withSort(1) +
@@ -104,7 +114,7 @@ local tbOverride = tbStandardOptions.override;
     local containerVariable =
       query.new(
         'container',
-        'label_values(kube_customresource_verticalpodautoscaler_status_recommendation_containerrecommendations_target{%(clusterLabel)s="$cluster", job=~"$job", namespace=~"$namespace", verticalpodautoscaler=~"$vpa"}, container)' % $._config
+        'label_values(kube_customresource_verticalpodautoscaler_status_recommendation_containerrecommendations_target{%(clusterLabel)s=~"$cluster", job=~"$job", namespace=~"$namespace", verticalpodautoscaler=~"$vpa"}, container)' % $._config
       ) +
       query.withDatasourceFromVariable(datasourceVariable) +
       query.withSort(1) +
@@ -129,39 +139,39 @@ local tbOverride = tbStandardOptions.override;
         label_replace(
           max(
             kube_pod_container_resource_requests{
-              %(clusterLabel)s="$cluster",
+              %(clusterLabel)s=~"$cluster",
               job=~"$job",
               namespace=~"$namespace",
               resource="cpu"
             }
-          ) by (job, namespace, pod, container, resource),
+          ) by (job, %(clusterByLabel)snamespace, pod, container, resource),
           "verticalpodautoscaler", "%(vpaPrefix)s$1", "pod", "^(.*?)(?:-[a-f0-9]{8,10}-[a-z0-9]{5}|-[0-9]+|-[a-z0-9]{5,16})$"
         )
-        + on(job, namespace, container, resource, verticalpodautoscaler) group_left()
+        + on(job, %(clusterByLabel)snamespace, container, resource, verticalpodautoscaler) group_left()
         0 *
         max(
           kube_customresource_verticalpodautoscaler_status_recommendation_containerrecommendations_target{
-            %(clusterLabel)s="$cluster",
+            %(clusterLabel)s=~"$cluster",
             job=~"$job",
             namespace=~"$namespace",
             resource="cpu"
           }
-        ) by (job, namespace, verticalpodautoscaler, container, resource)
+        ) by (job, %(clusterByLabel)snamespace, verticalpodautoscaler, container, resource)
       )
-      by (job, namespace, verticalpodautoscaler, container, resource)
-    ||| % vpaRequestConfig,
+      by (job, %(clusterByLabel)snamespace, verticalpodautoscaler, container, resource)
+    ||| % byCluster(vpaRequestConfig),
     local vpaCpuLimitsQuery = std.strReplace(vpaCpuRequestsQuery, 'requests', 'limits'),
 
     local vpaCpuRecommendationTargetQuery = |||
       max(
         kube_customresource_verticalpodautoscaler_status_recommendation_containerrecommendations_target{
-          %(clusterLabel)s="$cluster",
+          %(clusterLabel)s=~"$cluster",
           job=~"$job",
           namespace=~"$namespace",
           resource="cpu"
         }
-      ) by (job, namespace, verticalpodautoscaler, container, resource)
-    ||| % $._config,
+      ) by (job, %(clusterByLabel)snamespace, verticalpodautoscaler, container, resource)
+    ||| % byCluster($._config),
     local vpaCpuRecommendationLowerBoundQuery = std.strReplace(vpaCpuRecommendationTargetQuery, 'target', 'lowerbound'),
     local vpaCpuRecommendationUpperBoundQuery = std.strReplace(vpaCpuRecommendationTargetQuery, 'target', 'upperbound'),
 
@@ -241,17 +251,19 @@ local tbOverride = tbStandardOptions.override;
               'Value #C': 'Lower Bound',
               'Value #D': 'Target',
               'Value #E': 'Upper Bound',
-            },
+            } +
+            if $._config.vpa.clusterAggregation then {cluster: 'Cluster'} else {},
             indexByName: {
-              verticalpodautoscaler: 0,
-              container: 1,
-              resource: 2,
-              'Value #A': 3,
-              'Value #B': 4,
-              'Value #C': 5,
-              'Value #D': 6,
-              'Value #E': 7,
-            },
+              verticalpodautoscaler: 1,
+              container: 2,
+              resource: 3,
+              'Value #A': 4,
+              'Value #B': 5,
+              'Value #C': 6,
+              'Value #D': 7,
+              'Value #E': 8,
+            } +
+            if $._config.vpa.clusterAggregation then {cluster: 0} else {},
             excludeByName: {
               Time: true,
               job: true,
@@ -372,17 +384,19 @@ local tbOverride = tbStandardOptions.override;
               'Value #C': 'Lower Bound',
               'Value #D': 'Target',
               'Value #E': 'Upper Bound',
-            },
+            } +
+            if $._config.vpa.clusterAggregation then {cluster: 'Cluster'} else {},
             indexByName: {
-              verticalpodautoscaler: 0,
-              container: 1,
-              resource: 2,
-              'Value #A': 3,
-              'Value #B': 4,
-              'Value #C': 5,
-              'Value #D': 6,
-              'Value #E': 7,
-            },
+              verticalpodautoscaler: 1,
+              container: 2,
+              resource: 3,
+              'Value #A': 4,
+              'Value #B': 5,
+              'Value #C': 6,
+              'Value #D': 7,
+              'Value #E': 8,
+            } +
+            if $._config.vpa.clusterAggregation then {cluster: 0} else {},
             excludeByName: {
               namespace: true,
               Time: true,
@@ -424,40 +438,40 @@ local tbOverride = tbStandardOptions.override;
     local vpaCpuRecommendationTargetOverTimeQuery = |||
       max(
         kube_customresource_verticalpodautoscaler_status_recommendation_containerrecommendations_target{
-          %(clusterLabel)s="$cluster",
+          %(clusterLabel)s=~"$cluster",
           job=~"$job",
           namespace=~"$namespace",
           resource="cpu",
           verticalpodautoscaler=~"$vpa",
           container=~"$container"
         }
-      ) by (job, namespace, verticalpodautoscaler, container, resource)
-    ||| % $._config,
+      ) by (job, %(clusterByLabel)snamespace, verticalpodautoscaler, container, resource)
+    ||| % byCluster($._config),
     local vpaCpuRecommendationLowerBoundOverTimeQuery = std.strReplace(vpaCpuRecommendationTargetOverTimeQuery, 'target', 'lowerbound'),
     local vpaCpuRecommendationUpperBoundOverTimeQuery = std.strReplace(vpaCpuRecommendationTargetOverTimeQuery, 'target', 'upperbound'),
     local vpaCpuUsageOverTimeQuery = |||
       avg(
         node_namespace_pod_container:container_cpu_usage_seconds_total:sum_irate{
-          %(clusterLabel)s="$cluster",
+          %(clusterLabel)s=~"$cluster",
           namespace=~"$namespace",
           pod=~"$vpa-.*",
           container=~"$container",
           container!=""
         }
-      ) by (container)
-    ||| % $._config,
+      ) by (%(clusterByLabel)scontainer)
+    ||| % byCluster($._config),
     local vpaCpuRequestOverTimeQuery = |||
       max(
         kube_pod_container_resource_requests{
-          %(clusterLabel)s="$cluster",
+          %(clusterLabel)s=~"$cluster",
           job=~"$job",
           namespace=~"$namespace",
           pod=~"$vpa-.*",
           resource=~"cpu",
           container=~"$container"
         }
-      ) by (container)
-    ||| % $._config,
+      ) by (%(clusterByLabel)scontainer)
+    ||| % byCluster($._config),
     local vpaCpuLimitOverTimeQuery = std.strReplace(vpaCpuRequestOverTimeQuery, 'requests', 'limits'),
 
     local vpaCpuRecommendationOverTimeTimeSeriesPanel =
@@ -527,13 +541,13 @@ local tbOverride = tbStandardOptions.override;
     local vpaMemoryUsageOverTimeQuery = |||
       avg(
         container_memory_working_set_bytes{
-          %(clusterLabel)s="$cluster",
+          %(clusterLabel)s=~"$cluster",
           namespace=~"$namespace",
           pod=~"$vpa-.*",
           container=~"$container"
         }
-      ) by (container)
-    ||| % $._config,
+      ) by (%(clusterByLabel)scontainer)
+    ||| % byCluster($._config),
     local vpaMemoryRequestOverTimeQuery = std.strReplace(vpaCpuRequestOverTimeQuery, 'cpu', 'memory'),
     local vpaMemoryLimitOverTimeQuery = std.strReplace(vpaMemoryRequestOverTimeQuery, 'requests', 'limits'),
 
