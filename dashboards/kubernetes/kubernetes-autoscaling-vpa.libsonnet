@@ -474,6 +474,8 @@ local tbOverride = tbStandardOptions.override;
     ||| % byCluster($._config),
     local vpaCpuLimitOverTimeQuery = std.strReplace(vpaCpuRequestOverTimeQuery, 'requests', 'limits'),
 
+    local clusterInLegend(str) = if $._config.vpa.clusterAggregation then '{{cluster}} ' + str else str,
+
     local vpaCpuRecommendationOverTimeTimeSeriesPanel =
       timeSeriesPanel.new(
         'VPA CPU Recommendations Over Time',
@@ -485,42 +487,42 @@ local tbOverride = tbStandardOptions.override;
             vpaCpuRecommendationLowerBoundOverTimeQuery,
           ) +
           prometheus.withLegendFormat(
-            '{{ container }} - Lower Bound'
+            clusterInLegend('Lower Bound')
           ),
           prometheus.new(
             '$datasource',
             vpaCpuRecommendationTargetOverTimeQuery,
           ) +
           prometheus.withLegendFormat(
-            '{{ container }} - Target'
+            clusterInLegend('Target')
           ),
           prometheus.new(
             '$datasource',
             vpaCpuRecommendationUpperBoundOverTimeQuery,
           ) +
           prometheus.withLegendFormat(
-            '{{ container }} - Upper Bound'
+            clusterInLegend('Upper Bound')
           ),
           prometheus.new(
             '$datasource',
             vpaCpuUsageOverTimeQuery,
           ) +
           prometheus.withLegendFormat(
-            '{{ container }} - Usage'
+            clusterInLegend('Usage')
           ),
           prometheus.new(
             '$datasource',
             vpaCpuRequestOverTimeQuery,
           ) +
           prometheus.withLegendFormat(
-            '{{ container }} - Requests'
+            clusterInLegend('Requests')
           ),
           prometheus.new(
             '$datasource',
             vpaCpuLimitOverTimeQuery,
           ) +
           prometheus.withLegendFormat(
-            '{{ container }} - Limits'
+            clusterInLegend('Limits')
           ),
         ]
       ) +
@@ -562,42 +564,42 @@ local tbOverride = tbStandardOptions.override;
             vpaMemoryRecommendationLowerBoundOverTimeQuery,
           ) +
           prometheus.withLegendFormat(
-            '{{ container }} - Lower Bound'
+            clusterInLegend('Lower Bound')
           ),
           prometheus.new(
             '$datasource',
             vpaMemoryRecommendationTargetOverTimeQuery,
           ) +
           prometheus.withLegendFormat(
-            '{{ container }} - Target'
+            clusterInLegend('Target')
           ),
           prometheus.new(
             '$datasource',
             vpaMemoryRecommendationUpperBoundOverTimeQuery,
           ) +
           prometheus.withLegendFormat(
-            '{{ container }} - Upper Bound'
+            clusterInLegend('Upper Bound')
           ),
           prometheus.new(
             '$datasource',
             vpaMemoryUsageOverTimeQuery,
           ) +
           prometheus.withLegendFormat(
-            '{{ container }} - Usage'
+            clusterInLegend('Usage')
           ),
           prometheus.new(
             '$datasource',
             vpaMemoryRequestOverTimeQuery,
           ) +
           prometheus.withLegendFormat(
-            '{{ container }} - Requests'
+            clusterInLegend('Requests')
           ),
           prometheus.new(
             '$datasource',
             vpaMemoryLimitOverTimeQuery,
           ) +
           prometheus.withLegendFormat(
-            '{{ container }} - Limits'
+            clusterInLegend('Limits')
           ),
         ]
       ) +
@@ -622,14 +624,14 @@ local tbOverride = tbStandardOptions.override;
           vpaCpuRecommendationTargetOverTimeQuery
         ) +
         prometheus.withLegendFormat(
-          'CPU Requests'
+          clusterInLegend('CPU Requests')
         ),
         prometheus.new(
           '$datasource',
           vpaCpuRecommendationTargetOverTimeQuery
         ) +
         prometheus.withLegendFormat(
-          'CPU Limits'
+          clusterInLegend('CPU Limits')
         ),
       ]) +
       stStandardOptions.withUnit('short') +
@@ -649,14 +651,14 @@ local tbOverride = tbStandardOptions.override;
           vpaCpuRecommendationLowerBoundOverTimeQuery
         ) +
         prometheus.withLegendFormat(
-          'CPU Requests'
+          clusterInLegend('CPU Requests')
         ),
         prometheus.new(
           '$datasource',
           vpaCpuRecommendationUpperBoundOverTimeQuery
         ) +
         prometheus.withLegendFormat(
-          'CPU Limits'
+          clusterInLegend('CPU Limits')
         ),
       ]) +
       stStandardOptions.withUnit('short') +
@@ -684,14 +686,14 @@ local tbOverride = tbStandardOptions.override;
           vpaMemoryRecommendationTargetOverTimeQuery
         ) +
         prometheus.withLegendFormat(
-          'Memory Requests'
+          clusterInLegend('Memory Requests')
         ),
         prometheus.new(
           '$datasource',
           vpaMemoryRecommendationTargetOverTimeQuery
         ) +
         prometheus.withLegendFormat(
-          'Memory Limits'
+          clusterInLegend('Memory Limits')
         ),
       ]) +
       stStandardOptions.withUnit('bytes') +
@@ -711,14 +713,14 @@ local tbOverride = tbStandardOptions.override;
           vpaMemoryRecommendationLowerBoundOverTimeQuery
         ) +
         prometheus.withLegendFormat(
-          'Memory Requests'
+          clusterInLegend('Memory Requests')
         ),
         prometheus.new(
           '$datasource',
           vpaMemoryRecommendationUpperBoundOverTimeQuery
         ) +
         prometheus.withLegendFormat(
-          'Memory Limits'
+          clusterInLegend('Memory Limits')
         ),
       ]) +
       stStandardOptions.withUnit('bytes') +
