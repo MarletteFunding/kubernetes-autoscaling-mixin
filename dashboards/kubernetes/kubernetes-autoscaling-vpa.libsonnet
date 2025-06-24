@@ -37,7 +37,7 @@ local tbOverride = tbStandardOptions.override;
 {
   grafanaDashboards+:: std.prune({
 
-    local byCluster(labels) = {'clusterByLabel': if $._config.vpa.clusterAggregation then 'cluster, ' else ''} + labels,
+    local byCluster(labels) = { clusterByLabel: if $._config.vpa.clusterAggregation then 'cluster, ' else '' } + labels,
 
     local datasourceVariable =
       datasource.new(
@@ -65,15 +65,15 @@ local tbOverride = tbStandardOptions.override;
       query.refresh.onTime() +
       (
         if $._config.showMultiCluster then
-        (
+          (
             if $._config.vpa.clusterAggregation then
-            (
-              query.generalOptions.showOnDashboard.withLabelAndValue() +
-              query.withSort(1) +
-              query.selectionOptions.withMulti(true)
-            )
+              (
+                query.generalOptions.showOnDashboard.withLabelAndValue() +
+                query.withSort(1) +
+                query.selectionOptions.withMulti(true)
+              )
             else query.generalOptions.showOnDashboard.withLabelAndValue()
-        )
+          )
         else query.generalOptions.showOnDashboard.withNothing()
       ),
 
@@ -243,27 +243,27 @@ local tbOverride = tbStandardOptions.override;
         tbQueryOptions.transformation.withOptions(
           {
             renameByName: {
-              verticalpodautoscaler: 'Vertical Pod Autoscaler',
-              container: 'Container',
-              resource: 'Resource',
-              'Value #A': 'Requests',
-              'Value #B': 'Limits',
-              'Value #C': 'Lower Bound',
-              'Value #D': 'Target',
-              'Value #E': 'Upper Bound',
-            } +
-            if $._config.vpa.clusterAggregation then {cluster: 'Cluster'} else {},
+                            verticalpodautoscaler: 'Vertical Pod Autoscaler',
+                            container: 'Container',
+                            resource: 'Resource',
+                            'Value #A': 'Requests',
+                            'Value #B': 'Limits',
+                            'Value #C': 'Lower Bound',
+                            'Value #D': 'Target',
+                            'Value #E': 'Upper Bound',
+                          } +
+                          if $._config.vpa.clusterAggregation then { cluster: 'Cluster' } else {},
             indexByName: {
-              verticalpodautoscaler: 1,
-              container: 2,
-              resource: 3,
-              'Value #A': 4,
-              'Value #B': 5,
-              'Value #C': 6,
-              'Value #D': 7,
-              'Value #E': 8,
-            } +
-            if $._config.vpa.clusterAggregation then {cluster: 0} else {},
+                           verticalpodautoscaler: 1,
+                           container: 2,
+                           resource: 3,
+                           'Value #A': 4,
+                           'Value #B': 5,
+                           'Value #C': 6,
+                           'Value #D': 7,
+                           'Value #E': 8,
+                         } +
+                         if $._config.vpa.clusterAggregation then { cluster: 0 } else {},
             excludeByName: {
               Time: true,
               job: true,
@@ -376,27 +376,27 @@ local tbOverride = tbStandardOptions.override;
         tbQueryOptions.transformation.withOptions(
           {
             renameByName: {
-              verticalpodautoscaler: 'Vertical Pod Autoscaler',
-              container: 'Container',
-              resource: 'Resource',
-              'Value #A': 'Requests',
-              'Value #B': 'Limits',
-              'Value #C': 'Lower Bound',
-              'Value #D': 'Target',
-              'Value #E': 'Upper Bound',
-            } +
-            if $._config.vpa.clusterAggregation then {cluster: 'Cluster'} else {},
+                            verticalpodautoscaler: 'Vertical Pod Autoscaler',
+                            container: 'Container',
+                            resource: 'Resource',
+                            'Value #A': 'Requests',
+                            'Value #B': 'Limits',
+                            'Value #C': 'Lower Bound',
+                            'Value #D': 'Target',
+                            'Value #E': 'Upper Bound',
+                          } +
+                          if $._config.vpa.clusterAggregation then { cluster: 'Cluster' } else {},
             indexByName: {
-              verticalpodautoscaler: 1,
-              container: 2,
-              resource: 3,
-              'Value #A': 4,
-              'Value #B': 5,
-              'Value #C': 6,
-              'Value #D': 7,
-              'Value #E': 8,
-            } +
-            if $._config.vpa.clusterAggregation then {cluster: 0} else {},
+                           verticalpodautoscaler: 1,
+                           container: 2,
+                           resource: 3,
+                           'Value #A': 4,
+                           'Value #B': 5,
+                           'Value #C': 6,
+                           'Value #D': 7,
+                           'Value #E': 8,
+                         } +
+                         if $._config.vpa.clusterAggregation then { cluster: 0 } else {},
             excludeByName: {
               namespace: true,
               Time: true,
