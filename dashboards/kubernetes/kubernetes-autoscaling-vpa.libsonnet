@@ -37,8 +37,6 @@ local tbOverride = tbStandardOptions.override;
 {
   grafanaDashboards+:: std.prune({
 
-    local byCluster(labels) = { clusterByLabel: if $._config.vpa.clusterAggregation then 'cluster, ' else '' } + labels,
-
     local datasourceVariable =
       datasource.new(
         'datasource',
@@ -66,13 +64,9 @@ local tbOverride = tbStandardOptions.override;
       (
         if $._config.showMultiCluster then
           (
-            if $._config.vpa.clusterAggregation then
-              (
-                query.generalOptions.showOnDashboard.withLabelAndValue() +
-                query.withSort(1) +
-                query.selectionOptions.withMulti(true)
-              )
-            else query.generalOptions.showOnDashboard.withLabelAndValue()
+            query.generalOptions.showOnDashboard.withLabelAndValue() +
+            query.withSort(1) +
+            query.selectionOptions.withMulti($._config.vpa.clusterAggregation)
           )
         else query.generalOptions.showOnDashboard.withNothing()
       ),
@@ -144,10 +138,10 @@ local tbOverride = tbStandardOptions.override;
               namespace=~"$namespace",
               resource="cpu"
             }
-          ) by (job, %(clusterByLabel)snamespace, pod, container, resource),
+          ) by (job, %(clusterLabel)s, namespace, pod, container, resource),
           "verticalpodautoscaler", "%(vpaPrefix)s$1", "pod", "^(.*?)(?:-[a-f0-9]{8,10}-[a-z0-9]{5}|-[0-9]+|-[a-z0-9]{5,16})$"
         )
-        + on(job, %(clusterByLabel)snamespace, container, resource, verticalpodautoscaler) group_left()
+        + on(job, %(clusterLabel)s, namespace, container, resource, verticalpodautoscaler) group_left()
         0 *
         max(
           kube_customresource_verticalpodautoscaler_status_recommendation_containerrecommendations_target{
@@ -156,10 +150,10 @@ local tbOverride = tbStandardOptions.override;
             namespace=~"$namespace",
             resource="cpu"
           }
-        ) by (job, %(clusterByLabel)snamespace, verticalpodautoscaler, container, resource)
+        ) by (job, %(clusterLabel)s, namespace, verticalpodautoscaler, container, resource)
       )
-      by (job, %(clusterByLabel)snamespace, verticalpodautoscaler, container, resource)
-    ||| % byCluster(vpaRequestConfig),
+      by (job, %(clusterLabel)s, namespace, verticalpodautoscaler, container, resource)
+    ||| % vpaRequestConfig,
     local vpaCpuLimitsQuery = std.strReplace(vpaCpuRequestsQuery, 'requests', 'limits'),
 
     local vpaCpuRecommendationTargetQuery = |||
@@ -170,10 +164,34 @@ local tbOverride = tbStandardOptions.override;
           namespace=~"$namespace",
           resource="cpu"
         }
-      ) by (job, %(clusterByLabel)snamespace, verticalpodautoscaler, container, resource)
-    ||| % byCluster($._config),
+      ) by (job, %(clusterLabel)s, namespace, verticalpodautoscaler, container, resource)
+    ||| % $._config,
     local vpaCpuRecommendationLowerBoundQuery = std.strReplace(vpaCpuRecommendationTargetQuery, 'target', 'lowerbound'),
     local vpaCpuRecommendationUpperBoundQuery = std.strReplace(vpaCpuRecommendationTargetQuery, 'target', 'upperbound'),
+
+    local vpaTableRenameByName = {
+      cluster: if $._config.vpa.clusterAggregation then 'Cluster' else null,
+      verticalpodautoscaler: 'Vertical Pod Autoscaler',
+      container: 'Container',
+      resource: 'Resource',
+      'Value #A': 'Requests',
+      'Value #B': 'Limits',
+      'Value #C': 'Lower Bound',
+      'Value #D': 'Target',
+      'Value #E': 'Upper Bound',
+    },
+
+    local vpaTableIndexByName = {
+      cluster: if $._config.vpa.clusterAggregation then 0 else null,
+      verticalpodautoscaler: 1,
+      container: 2,
+      resource: 3,
+      'Value #A': 4,
+      'Value #B': 5,
+      'Value #C': 6,
+      'Value #D': 7,
+      'Value #E': 8,
+    },
 
     local vpaCpuResourceTable =
       tablePanel.new(
@@ -242,28 +260,8 @@ local tbOverride = tbStandardOptions.override;
         ) +
         tbQueryOptions.transformation.withOptions(
           {
-            renameByName: {
-                            verticalpodautoscaler: 'Vertical Pod Autoscaler',
-                            container: 'Container',
-                            resource: 'Resource',
-                            'Value #A': 'Requests',
-                            'Value #B': 'Limits',
-                            'Value #C': 'Lower Bound',
-                            'Value #D': 'Target',
-                            'Value #E': 'Upper Bound',
-                          } +
-                          if $._config.vpa.clusterAggregation then { cluster: 'Cluster' } else {},
-            indexByName: {
-                           verticalpodautoscaler: 1,
-                           container: 2,
-                           resource: 3,
-                           'Value #A': 4,
-                           'Value #B': 5,
-                           'Value #C': 6,
-                           'Value #D': 7,
-                           'Value #E': 8,
-                         } +
-                         if $._config.vpa.clusterAggregation then { cluster: 0 } else {},
+            renameByName: vpaTableRenameByName,
+            indexByName: vpaTableIndexByName,
             excludeByName: {
               Time: true,
               job: true,
@@ -375,28 +373,8 @@ local tbOverride = tbStandardOptions.override;
         ) +
         tbQueryOptions.transformation.withOptions(
           {
-            renameByName: {
-                            verticalpodautoscaler: 'Vertical Pod Autoscaler',
-                            container: 'Container',
-                            resource: 'Resource',
-                            'Value #A': 'Requests',
-                            'Value #B': 'Limits',
-                            'Value #C': 'Lower Bound',
-                            'Value #D': 'Target',
-                            'Value #E': 'Upper Bound',
-                          } +
-                          if $._config.vpa.clusterAggregation then { cluster: 'Cluster' } else {},
-            indexByName: {
-                           verticalpodautoscaler: 1,
-                           container: 2,
-                           resource: 3,
-                           'Value #A': 4,
-                           'Value #B': 5,
-                           'Value #C': 6,
-                           'Value #D': 7,
-                           'Value #E': 8,
-                         } +
-                         if $._config.vpa.clusterAggregation then { cluster: 0 } else {},
+            renameByName: vpaTableRenameByName,
+            indexByName: vpaTableIndexByName,
             excludeByName: {
               namespace: true,
               Time: true,
@@ -445,8 +423,8 @@ local tbOverride = tbStandardOptions.override;
           verticalpodautoscaler=~"$vpa",
           container=~"$container"
         }
-      ) by (job, %(clusterByLabel)snamespace, verticalpodautoscaler, container, resource)
-    ||| % byCluster($._config),
+      ) by (job, %(clusterLabel)s, namespace, verticalpodautoscaler, container, resource)
+    ||| % $._config,
     local vpaCpuRecommendationLowerBoundOverTimeQuery = std.strReplace(vpaCpuRecommendationTargetOverTimeQuery, 'target', 'lowerbound'),
     local vpaCpuRecommendationUpperBoundOverTimeQuery = std.strReplace(vpaCpuRecommendationTargetOverTimeQuery, 'target', 'upperbound'),
     local vpaCpuUsageOverTimeQuery = |||
@@ -458,8 +436,8 @@ local tbOverride = tbStandardOptions.override;
           container=~"$container",
           container!=""
         }
-      ) by (%(clusterByLabel)scontainer)
-    ||| % byCluster($._config),
+      ) by (%(clusterLabel)s, container)
+    ||| % $._config,
     local vpaCpuRequestOverTimeQuery = |||
       max(
         kube_pod_container_resource_requests{
@@ -470,11 +448,11 @@ local tbOverride = tbStandardOptions.override;
           resource=~"cpu",
           container=~"$container"
         }
-      ) by (%(clusterByLabel)scontainer)
-    ||| % byCluster($._config),
+      ) by (%(clusterLabel)s, container)
+    ||| % $._config,
     local vpaCpuLimitOverTimeQuery = std.strReplace(vpaCpuRequestOverTimeQuery, 'requests', 'limits'),
 
-    local clusterInLegend(str) = if $._config.vpa.clusterAggregation then '{{cluster}} ' + str else str,
+    local clusterInLegend(str) = if $._config.vpa.clusterAggregation then '{{cluster}} - ' + str else str,
 
     local vpaCpuRecommendationOverTimeTimeSeriesPanel =
       timeSeriesPanel.new(
@@ -548,8 +526,8 @@ local tbOverride = tbStandardOptions.override;
           pod=~"$vpa-.*",
           container=~"$container"
         }
-      ) by (%(clusterByLabel)scontainer)
-    ||| % byCluster($._config),
+      ) by (%(clusterLabel)s, container)
+    ||| % $._config,
     local vpaMemoryRequestOverTimeQuery = std.strReplace(vpaCpuRequestOverTimeQuery, 'cpu', 'memory'),
     local vpaMemoryLimitOverTimeQuery = std.strReplace(vpaMemoryRequestOverTimeQuery, 'requests', 'limits'),
 
