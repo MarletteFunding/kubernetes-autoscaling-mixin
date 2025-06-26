@@ -169,28 +169,34 @@ local tbOverride = tbStandardOptions.override;
     local vpaCpuRecommendationLowerBoundQuery = std.strReplace(vpaCpuRecommendationTargetQuery, 'target', 'lowerbound'),
     local vpaCpuRecommendationUpperBoundQuery = std.strReplace(vpaCpuRecommendationTargetQuery, 'target', 'upperbound'),
 
-    local vpaTableRenameByName = {
-      cluster: if $._config.vpa.clusterAggregation then 'Cluster' else null,
-      verticalpodautoscaler: 'Vertical Pod Autoscaler',
-      container: 'Container',
-      resource: 'Resource',
-      'Value #A': 'Requests',
-      'Value #B': 'Limits',
-      'Value #C': 'Lower Bound',
-      'Value #D': 'Target',
-      'Value #E': 'Upper Bound',
-    },
-
-    local vpaTableIndexByName = {
-      cluster: if $._config.vpa.clusterAggregation then 0 else null,
-      verticalpodautoscaler: 1,
-      container: 2,
-      resource: 3,
-      'Value #A': 4,
-      'Value #B': 5,
-      'Value #C': 6,
-      'Value #D': 7,
-      'Value #E': 8,
+    local vpaTableTransformationOptions = {
+      renameByName: {
+        cluster: if $._config.vpa.clusterAggregation then 'Cluster' else null,
+        verticalpodautoscaler: 'Vertical Pod Autoscaler',
+        container: 'Container',
+        resource: 'Resource',
+        'Value #A': 'Requests',
+        'Value #B': 'Limits',
+        'Value #C': 'Lower Bound',
+        'Value #D': 'Target',
+        'Value #E': 'Upper Bound',
+      },
+      indexByName: {
+        cluster: if $._config.vpa.clusterAggregation then 0 else null,
+        verticalpodautoscaler: 1,
+        container: 2,
+        resource: 3,
+        'Value #A': 4,
+        'Value #B': 5,
+        'Value #C': 6,
+        'Value #D': 7,
+        'Value #E': 8,
+      },
+      excludeByName: {
+        Time: true,
+        job: true,
+        namespace: true,
+      },
     },
 
     local vpaCpuResourceTable =
@@ -258,17 +264,7 @@ local tbOverride = tbStandardOptions.override;
         tbQueryOptions.transformation.withId(
           'organize'
         ) +
-        tbQueryOptions.transformation.withOptions(
-          {
-            renameByName: vpaTableRenameByName,
-            indexByName: vpaTableIndexByName,
-            excludeByName: {
-              Time: true,
-              job: true,
-              namespace: true,
-            },
-          }
-        ),
+        tbQueryOptions.transformation.withOptions(vpaTableTransformationOptions),
       ]) +
       tbStandardOptions.withOverrides([
         tbOverride.byName.new('Lower Bound') +
@@ -371,17 +367,7 @@ local tbOverride = tbStandardOptions.override;
         tbQueryOptions.transformation.withId(
           'organize'
         ) +
-        tbQueryOptions.transformation.withOptions(
-          {
-            renameByName: vpaTableRenameByName,
-            indexByName: vpaTableIndexByName,
-            excludeByName: {
-              namespace: true,
-              Time: true,
-              job: true,
-            },
-          }
-        ),
+        tbQueryOptions.transformation.withOptions(vpaTableTransformationOptions),
       ]) +
       tbStandardOptions.withOverrides([
         tbOverride.byName.new('Lower Bound') +
