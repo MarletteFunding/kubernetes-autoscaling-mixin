@@ -28,6 +28,8 @@ local annotation = g.dashboard.annotation;
     karpenterOverviewDashboardUid: 'kubernetes-autoscaling-mixin-kover-jkwq',
     karpenterActivityDashboardUid: 'kubernetes-autoscaling-mixin-kact-jkwq',
     karpenterPerformanceDashboardUid: 'kubernetes-autoscaling-mixin-kperf-jkwq',
+    kedaScaledObjectDashboardUid: 'kubernetes-autoscaling-mixin-kedaso-jkwq',
+    kedaScaledJobDashboardUid: 'kubernetes-autoscaling-mixin-kedasj-jkwq',
 
     vpa: {
       enabled: true,
@@ -56,6 +58,16 @@ local annotation = g.dashboard.annotation;
       karpenterOverviewDashboardUrl: '%s/d/%s/kubernetes-autoscaling-karpenter-overview' % [this.grafanaUrl, this.karpenterOverviewDashboardUid],
       karpenterActivityDashboardUrl: '%s/d/%s/kubernetes-autoscaling-karpenter-activity' % [this.grafanaUrl, this.karpenterActivityDashboardUid],
       karpenterPerformanceDashboardUrl: '%s/d/%s/kubernetes-autoscaling-karpenter-performance' % [this.grafanaUrl, this.karpenterPerformanceDashboardUid],
+    },
+
+    keda: {
+      enabled: true,
+
+      kedaScaledObjectDashboardUrl: '%s/d/%s/kubernetes-autoscaling-keda-scaled-object' % [this.grafanaUrl, this.kedaScaledObjectDashboardUid],
+      kedaScaledJobDashboardUrl: '%s/d/%s/kubernetes-autoscaling-keda-scaled-job' % [this.grafanaUrl, this.kedaScaledJobDashboardUid],
+
+      // Used to link to the workload dashboard from the scaled job dashboards. Allows viewing resource usage.
+      k8sResourcesWorkloadDashboardUid: 'this-needs-to-be-customized',
     },
 
     tags: ['kubernetes', 'autoscaling', 'kubernetes-autoscaling-mixin'],

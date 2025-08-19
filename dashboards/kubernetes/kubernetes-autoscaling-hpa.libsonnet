@@ -82,8 +82,6 @@ local tbQueryOptions = tablePanel.queryOptions;
       ) +
       query.withDatasourceFromVariable(datasourceVariable) +
       query.withSort(1) +
-      query.generalOptions.withLabel('Namespace') +
-      query.selectionOptions.withMulti(true) +
       query.refresh.onLoad() +
       query.refresh.onTime(),
 
@@ -106,6 +104,17 @@ local tbQueryOptions = tablePanel.queryOptions;
       query.withDatasourceFromVariable(datasourceVariable) +
       query.withSort(1) +
       query.generalOptions.withLabel('Metric Name') +
+      query.refresh.onLoad() +
+      query.refresh.onTime(),
+
+    local metricTargetTypeVariable =
+      query.new(
+        'metric_target_type',
+        'label_values(kube_horizontalpodautoscaler_spec_target_metric{%(clusterLabel)s="$cluster", job=~"$job", namespace="$namespace", horizontalpodautoscaler="$hpa", metric_name=~"$metric_name"}, metric_target_type)' % $._config
+      ) +
+      query.withDatasourceFromVariable(datasourceVariable) +
+      query.withSort(1) +
+      query.generalOptions.withLabel('Metric Target Type') +
       query.selectionOptions.withMulti(true) +
       query.selectionOptions.withIncludeAll(true) +
       query.refresh.onLoad() +
@@ -118,6 +127,7 @@ local tbQueryOptions = tablePanel.queryOptions;
       namespaceVariable,
       hpaVariable,
       metricNameVariable,
+      metricTargetTypeVariable,
     ],
 
     local hpaDesiredReplicasQuery = |||
@@ -297,8 +307,8 @@ local tbQueryOptions = tablePanel.queryOptions;
               'Value #A': 'Threshold',
             },
             indexByName: {
-              namespace: 0,
-              horizontalpodautoscaler: 1,
+              horizontalpodautoscaler: 0,
+              namespace: 1,
               metric_name: 2,
               metric_target_type: 3,
               'Value #A': 4,
@@ -311,7 +321,7 @@ local tbQueryOptions = tablePanel.queryOptions;
         ),
       ]),
 
-    local hpaThresholdQuery = |||
+    local hpaUsageThresholdQuery = |||
       round(
         sum(
           kube_horizontalpodautoscaler_spec_target_metric{
@@ -320,16 +330,16 @@ local tbQueryOptions = tablePanel.queryOptions;
             namespace=~"$namespace",
             horizontalpodautoscaler="$hpa",
             metric_name=~"$metric_name",
-            metric_target_type="utilization"
+            metric_target_type=~"$metric_target_type",
           }
         ) by (job, namespace, horizontalpodautoscaler, metric_name, metric_target_type)
       )
     ||| % $._config,
-    local hpaUtilizationQuery = std.strReplace(hpaThresholdQuery, 'spec_target_metric', 'status_target_metric'),
+    local hpaUtilizationQuery = std.strReplace(hpaUsageThresholdQuery, 'spec_target_metric', 'status_target_metric'),
 
     local hpaUsageThresholdTimeSeriesPanel =
       timeSeriesPanel.new(
-        'Utilization & Threshold',
+        'Usage & Threshold',
       ) +
       tsQueryOptions.withTargets(
         [
@@ -338,11 +348,11 @@ local tbQueryOptions = tablePanel.queryOptions;
             hpaUtilizationQuery,
           ) +
           prometheus.withLegendFormat(
-            'Utilization / {{ metric_name }}'
+            '{{ metric_target_type }} / {{ metric_name }}'
           ),
           prometheus.new(
             '$datasource',
-            hpaThresholdQuery,
+            hpaUsageThresholdQuery,
           ) +
           prometheus.withLegendFormat(
             'Threshold / {{ metric_name }}'
@@ -412,6 +422,12 @@ local tbQueryOptions = tablePanel.queryOptions;
         title='Summary',
       ),
 
+    local hpaTargetTypeRow =
+      row.new(
+        title='Target Type $metric_name / $metric_target_type' % $._config,
+      ) +
+      row.withRepeat('metric_target_type'),
+
     'kubernetes-autoscaling-mixin-hpa.json':
       $._config.bypassDashboardValidation +
       dashboard.new(
@@ -458,15 +474,20 @@ local tbQueryOptions = tablePanel.queryOptions;
           tablePanel.gridPos.withX(0) +
           tablePanel.gridPos.withY(6) +
           tablePanel.gridPos.withW(24) +
-          tablePanel.gridPos.withH(6),
+          tablePanel.gridPos.withH(8),
+          hpaTargetTypeRow +
+          row.gridPos.withX(0) +
+          row.gridPos.withY(14) +
+          row.gridPos.withW(24) +
+          row.gridPos.withH(1),
           hpaUsageThresholdTimeSeriesPanel +
           timeSeriesPanel.gridPos.withX(0) +
-          timeSeriesPanel.gridPos.withY(12) +
+          timeSeriesPanel.gridPos.withY(15) +
           timeSeriesPanel.gridPos.withW(24) +
           timeSeriesPanel.gridPos.withH(6),
           hpaReplicasTimeSeriesPanel +
           timeSeriesPanel.gridPos.withX(0) +
-          timeSeriesPanel.gridPos.withY(18) +
+          timeSeriesPanel.gridPos.withY(21) +
           timeSeriesPanel.gridPos.withW(24) +
           timeSeriesPanel.gridPos.withH(6),
         ]
