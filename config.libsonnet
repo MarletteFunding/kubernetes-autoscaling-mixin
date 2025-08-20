@@ -66,6 +66,11 @@ local annotation = g.dashboard.annotation;
       kedaScaledObjectDashboardUrl: '%s/d/%s/kubernetes-autoscaling-keda-scaled-object' % [this.grafanaUrl, this.kedaScaledObjectDashboardUid],
       kedaScaledJobDashboardUrl: '%s/d/%s/kubernetes-autoscaling-keda-scaled-job' % [this.grafanaUrl, this.kedaScaledJobDashboardUid],
 
+      // Default thresholds for KEDA the scaler metrics latency threshold in seconds.
+      scalerMetricsLatencyThreshold: '5',
+      // The default threshold for scaled objects to be considered paused for too long.
+      scaledObjectPausedThreshold: '1h',
+
       // Used to link to the workload dashboard from the scaled job dashboards. Allows viewing resource usage.
       k8sResourcesWorkloadDashboardUid: 'this-needs-to-be-customized',
     },

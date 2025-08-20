@@ -46,25 +46,6 @@ tests:
               summary: "Karpenter Nodepool near capacity."
               description: "The resource cpu in the Karpenter node pool nodepool-a is nearing its limit. Consider scaling or adding resources."
               dashboard_url: "https://grafana.com/d/kubernetes-autoscaling-mixin-kover-jkwq/kubernetes-autoscaling-karpenter-overview"
-  # Cluster Autoscaler
-  - interval: 1m
-    input_series:
-      - series: 'cluster_autoscaler_nodes_count{namespace="autoscaler", job="cluster-autoscaler"}'
-        values: "95x15"
-      - series: 'cluster_autoscaler_max_nodes_count{namespace="autoscaler", job="cluster-autoscaler"}'
-        values: "100x15"
-    alert_rule_test:
-      - eval_time: 15m
-        alertname: ClusterAutoscalerNodeCountNearCapacity
-        exp_alerts:
-          - exp_labels:
-              namespace: autoscaler
-              job: cluster-autoscaler
-              severity: warning
-            exp_annotations:
-              summary: "Cluster Autoscaler Node Count near Capacity."
-              description: "The node count for the cluster autoscaler job cluster-autoscaler is reaching max limit. Consider scaling node groups."
-              dashboard_url: "https://grafana.com/d/kubernetes-autoscaling-mixin-ca-jkwq/kubernetes-autoscaling-cluster-autoscaler"
   - interval: 1m
     input_series:
       - series: karpenter_nodeclaims_termination_duration_seconds_sum{namespace="karpenter", job="karpenter", nodepool="nodepool-a"}
@@ -88,6 +69,25 @@ tests:
               summary: "Karpenter Node Claims Termination Duration is High."
               description: "The average node claim termination duration in Karpenter has exceeded 20 minutes for more than 15 minutes in nodepool nodepool-a. This may indicate cloud provider issues or improper instance termination handling."
               dashboard_url: "https://grafana.com/d/kubernetes-autoscaling-mixin-kact-jkwq/kubernetes-autoscaling-karpenter-activity"
+  # Cluster Autoscaler
+  - interval: 1m
+    input_series:
+      - series: 'cluster_autoscaler_nodes_count{namespace="autoscaler", job="cluster-autoscaler"}'
+        values: "95x15"
+      - series: 'cluster_autoscaler_max_nodes_count{namespace="autoscaler", job="cluster-autoscaler"}'
+        values: "100x15"
+    alert_rule_test:
+      - eval_time: 15m
+        alertname: ClusterAutoscalerNodeCountNearCapacity
+        exp_alerts:
+          - exp_labels:
+              namespace: autoscaler
+              job: cluster-autoscaler
+              severity: warning
+            exp_annotations:
+              summary: "Cluster Autoscaler Node Count near Capacity."
+              description: "The node count for the cluster autoscaler job cluster-autoscaler is reaching max limit. Consider scaling node groups."
+              dashboard_url: "https://grafana.com/d/kubernetes-autoscaling-mixin-ca-jkwq/kubernetes-autoscaling-cluster-autoscaler"
   - interval: 1m
     input_series:
       - series: 'cluster_autoscaler_unschedulable_pods_count{namespace="autoscaler", job="cluster-autoscaler"}'
@@ -104,3 +104,92 @@ tests:
               summary: "Pods Pending Scheduling - Cluster Node Group Scaling Required"
               description: "The cluster currently has unschedulable pods, indicating resource shortages. Consider adding more nodes or increasing node group capacity."
               dashboard_url: "https://grafana.com/d/kubernetes-autoscaling-mixin-ca-jkwq/kubernetes-autoscaling-cluster-autoscaler"
+  # KEDA
+  - interval: 1m
+    input_series:
+      - series: 'keda_scaled_job_errors_total{namespace="keda", job="keda", scaledJob="test"}'
+        values: "1x25"
+    alert_rule_test:
+      - eval_time: 25m
+        alertname: KedaScaledJobErrors
+        exp_alerts:
+          - exp_labels:
+              namespace: keda
+              job: keda
+              severity: warning
+            exp_annotations:
+              summary: "Errors detected in KEDA scaled jobs."
+              description: "KEDA scaled jobs are experiencing errors. Check the scaled job in the identified namespace."
+              dashboard_url: "https://grafana.com/d/kubernetes-autoscaling-mixin-keda-jkwq/kubernetes-autoscaling-keda"
+
+  - interval: 1m
+    input_series:
+      - series: 'keda_scaled_object_errors_total{namespace="keda", job="keda"}'
+        values: "1x10"
+    alert_rule_test:
+      - eval_time: 10m
+        alertname: KedaScaledObjectErrors
+        exp_alerts:
+          - exp_labels:
+              namespace: keda
+              job: keda
+              severity: critical
+            exp_annotations:
+              summary: "Errors detected in KEDA scaled objects."
+              description: "Errors have been detected in KEDA scaled objects. Check the scaled object in the identified namespace."
+              dashboard_url: "https://grafana.com/d/kubernetes-autoscaling-mixin-keda-jkwq/kubernetes-autoscaling-keda"
+
+  - interval: 1m
+    input_series:
+      - series: 'keda_scaler_metrics_latency_seconds{namespace="keda", job="keda"}'
+        values: "9x10"
+    alert_rule_test:
+      - eval_time: 10m
+        alertname: KedaScalerLatencyHigh
+        exp_alerts:
+          - exp_labels:
+              namespace: keda
+              job: keda
+              severity: warning
+            exp_annotations:
+              summary: "High latency in KEDA scaler metrics."
+              description: "Latency in scaler metrics for the identified scaled object has exceeded acceptable limits."
+              dashboard_url: "https://grafana.com/d/kubernetes-autoscaling-mixin-keda-jkwq/kubernetes-autoscaling-keda"
+
+  - interval: 1h
+    input_series:
+      - series: 'keda_scaled_object_paused{namespace="keda", job="keda", exproted_namespace="test", scaledObject="test"}'
+        values: "1x25"
+    alert_rule_test:
+      - eval_time: 25h
+        alertname: KedaScaledObjectPaused
+        exp_alerts:
+          - exp_labels:
+              namespace: keda
+              job: keda
+              severity: warning
+            exp_annotations:
+              summary: "KEDA scaled object is paused."
+              description: "The scaled object in the identified namespace is paused."
+              dashboard_url: "https://grafana.com/d/kubernetes-autoscaling-mixin-keda-jkwq/kubernetes-autoscaling-keda"
+
+  - interval: 1m
+    input_series:
+      - series: 'keda_scaler_detail_errors_total{metric="s0-prometheus", namespace="keda", job="keda", scaledObject="test", scaler="prometheusScaler",triggerIndex="0",type="scaledjob"}'
+        values: "1x15"
+    alert_rule_test:
+      - eval_time: 15m
+        alertname: KedaScalerDetailErrors
+        exp_alerts:
+          - exp_labels:
+              metric: s0-prometheus
+              namespace: keda
+              job: keda
+              scaledObject: test
+              scaler: prometheusScaler
+              triggerIndex: "0"
+              severity: warning
+            exp_annotations:
+              summary: "Errors detected in KEDA scaler."
+              description: "Errors have occurred in the KEDA scaler. Investigate the scaler for issues in the identified namespace."
+              dashboard_url: "https://grafana.com/d/kubernetes-autoscaling-mixin-keda-jkwq/kubernetes-autoscaling-keda"

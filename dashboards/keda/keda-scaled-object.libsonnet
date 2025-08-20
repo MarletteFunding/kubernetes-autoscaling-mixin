@@ -9,15 +9,8 @@ local datasource = variable.datasource;
 local query = variable.query;
 local prometheus = g.query.prometheus;
 
-local statPanel = g.panel.stat;
 local timeSeries = g.panel.timeSeries;
 local tablePanel = g.panel.table;
-local pieChartPanel = g.panel.pieChart;
-
-// Stat
-local stOptions = statPanel.options;
-local stStandardOptions = statPanel.standardOptions;
-local stQueryOptions = statPanel.queryOptions;
 
 // Timeseries
 local tsOptions = timeSeries.options;
@@ -32,11 +25,6 @@ local tbOptions = tablePanel.options;
 local tbStandardOptions = tablePanel.standardOptions;
 local tbQueryOptions = tablePanel.queryOptions;
 local tbPanelOptions = tablePanel.panelOptions;
-local tbOverride = tbStandardOptions.override;
-
-// Pie Chart
-local pieOptions = pieChartPanel.options;
-local pieQueryOptions = pieChartPanel.queryOptions;
 
 {
   local timeSeriesPanel(title, unit, query, legend, calcs=['mean', 'max'], stack='none') =

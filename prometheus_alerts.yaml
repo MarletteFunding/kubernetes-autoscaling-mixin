@@ -88,3 +88,81 @@
     "for": "15m"
     "labels":
       "severity": "warning"
+- "name": "keda"
+  "rules":
+  - "alert": "KedaScaledJobErrors"
+    "annotations":
+      "dashboard_url": "https://grafana.com/d/kubernetes-autoscaling-mixin-kedasj-jkwq/kubernetes-autoscaling-keda-scaled-job?var-scaled_job={{ $labels.scaledJob }}&var-resource_namespace={{ $labels.exported_namespace }}"
+      "description": "KEDA scaled jobs are experiencing errors. Check the scaled job {{ $labels.scaledJob }} in the namespace {{ $labels.exported_namespace }}."
+      "summary": "Errors detected in KEDA scaled jobs."
+    "expr": |
+      sum(
+        increase(
+          keda_scaled_job_errors_total{
+            cluster="$cluster"
+          }[10m]
+        )
+      ) by (cluster, exported_namespace, scaledJob) > 0
+    "for": "1m"
+    "labels":
+      "severity": "warning"
+  - "alert": "KedaScaledObjectErrors"
+    "annotations":
+      "dashboard_url": "https://grafana.com/d/kubernetes-autoscaling-mixin-kedaso-jkwq/kubernetes-autoscaling-keda-scaled-object?var-scaled_object={{ $labels.scaledObject }}&var-resource_namespace={{ $labels.exported_namespace }}"
+      "description": "Errors have been detected in KEDA scaled objects. Check the scaled object {{ $labels.scaledObject }} in the namespace {{ $labels.exported_namespace }}."
+      "summary": "Errors detected in KEDA scaled objects."
+    "expr": |
+      sum(
+        increase(
+          keda_scaled_object_errors_total{
+            cluster="$cluster"
+          }[10m]
+        )
+      ) by (cluster, exported_namespace, scaledObject) > 0
+    "for": "1m"
+    "labels":
+      "severity": "critical"
+  - "alert": "KedaScalerLatencyHigh"
+    "annotations":
+      "dashboard_url": "https://grafana.com/d/kubernetes-autoscaling-mixin-kedaso-jkwq/kubernetes-autoscaling-keda-scaled-object?var-scaled_object={{ $labels.scaledObject }}&var-scaler={{ $labels.scaler }}"
+      "description": "Metric latency for scaler {{ $labels.scaler }} for the {{ $labels.scaledObject }} has exceeded acceptable limits."
+      "summary": "High latency in KEDA scaler metrics."
+    "expr": |
+      avg(
+        keda_scaler_metrics_latency_seconds{
+          cluster="$cluster"
+        }
+      ) by (cluster, exported_namespace, scaledObject, scaler) > 5
+    "for": "10m"
+    "labels":
+      "severity": "warning"
+  - "alert": "KedaScaledObjectPaused"
+    "annotations":
+      "dashboard_url": "https://grafana.com/d/kubernetes-autoscaling-mixin-kedaso-jkwq/kubernetes-autoscaling-keda-scaled-object?var-scaled_object={{ $labels.scaledObject }}&var-resource_namespace={{ $labels.exported_namespace }}"
+      "description": "The scaled object {{ $labels.scaledObject }} in namespace {{ $labels.exported_namespace }} is paused."
+      "summary": "KEDA scaled object is paused."
+    "expr": |
+      sum(
+        keda_scaled_object_paused{
+          cluster="$cluster"
+        }
+      ) by (cluster, exported_namespace, scaledObject) > 0
+    "for": "1h"
+    "labels":
+      "severity": "warning"
+  - "alert": "KedaScalerDetailErrors"
+    "annotations":
+      "dashboard_url": "https://grafana.com/d/kubernetes-autoscaling-mixin-kedaso-jkwq/kubernetes-autoscaling-keda-scaled-object?var-scaler={{ $labels.scaler }}&var-scaled_object={{ $labels.scaledObject }}"
+      "description": "Errors have occurred in the KEDA scaler {{ $labels.scaler }}. Investigate the scaler for the {{ $labels.type }} {{ $labels.scaledObject }} in namespace {{ $labels.exported_namespace }}."
+      "summary": "Errors detected in KEDA scaler."
+    "expr": |
+      sum(
+        increase(
+          keda_scaler_detail_errors_total{
+            cluster="$cluster"
+          }[10m]
+        )
+      ) by (cluster, exported_namespace, scaledObject, type, scaler) > 0
+    "for": "1m"
+    "labels":
+      "severity": "warning"
