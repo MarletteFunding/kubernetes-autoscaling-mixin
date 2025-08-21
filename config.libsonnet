@@ -41,7 +41,7 @@ local annotation = g.dashboard.annotation;
 
     clusterAutoscaler: {
       enabled: true,
-      clusterAutoscalerSelector: 'job=~"cluster-autoscaler"',
+      clusterAutoscalerSelector: 'job="cluster-autoscaler"',
 
       nodeCountCapacityThreshold: 75,
 
@@ -50,7 +50,7 @@ local annotation = g.dashboard.annotation;
 
     karpenter: {
       enabled: true,
-      karpenterSelector: 'job=~"karpenter"',
+      karpenterSelector: 'job="karpenter"',
 
       nodepoolCapacityThreshold: 75,
       nodeclaimTerminationThreshold: 60 * 20,
@@ -66,10 +66,12 @@ local annotation = g.dashboard.annotation;
       kedaScaledObjectDashboardUrl: '%s/d/%s/kubernetes-autoscaling-keda-scaled-object' % [this.grafanaUrl, this.kedaScaledObjectDashboardUid],
       kedaScaledJobDashboardUrl: '%s/d/%s/kubernetes-autoscaling-keda-scaled-job' % [this.grafanaUrl, this.kedaScaledJobDashboardUid],
 
+      kedaSelector: 'job="keda-operator"',
+
       // Default thresholds for KEDA the scaler metrics latency threshold in seconds.
       scalerMetricsLatencyThreshold: '5',
       // The default threshold for scaled objects to be considered paused for too long.
-      scaledObjectPausedThreshold: '1h',
+      scaledObjectPausedThreshold: '25h',
 
       // Used to link to the workload dashboard from the scaled job dashboards. Allows viewing resource usage.
       k8sResourcesWorkloadDashboardUid: 'this-needs-to-be-customized',

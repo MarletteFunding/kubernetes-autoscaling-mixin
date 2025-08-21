@@ -92,11 +92,15 @@
             },
             expr: |||
               sum (
-                cluster_autoscaler_nodes_count{%(clusterAutoscalerSelector)s}
+                cluster_autoscaler_nodes_count{
+                  %(clusterAutoscalerSelector)s
+                }
               ) by (%(clusterLabel)s, namespace, job)
               /
               sum (
-                cluster_autoscaler_max_nodes_count{%(clusterAutoscalerSelector)s}
+                cluster_autoscaler_max_nodes_count{
+                  %(clusterAutoscalerSelector)s
+                }
               ) by (%(clusterLabel)s, namespace, job)
               * 100 > %(nodeCountCapacityThreshold)s
             ||| % clusterAutoscalerConfig,
@@ -114,7 +118,9 @@
             },
             expr: |||
               sum (
-                cluster_autoscaler_unschedulable_pods_count{%(clusterAutoscalerSelector)s}
+                cluster_autoscaler_unschedulable_pods_count{
+                  %(clusterAutoscalerSelector)s
+                }
               ) by (%(clusterLabel)s, namespace, job)
               > 0
             ||| % clusterAutoscalerConfig,
@@ -132,18 +138,18 @@
           {
             alert: 'KedaScaledJobErrors',
             annotations: {
-              summary: 'Errors detected in KEDA scaled jobs.',
-              description: 'KEDA scaled jobs are experiencing errors. Check the scaled job {{ $labels.scaledJob }} in the namespace {{ $labels.exported_namespace }}.',
-              dashboard_url: $._config.keda.kedaScaledJobDashboardUrl + '?var-scaled_job={{ $labels.scaledJob }}&var-resource_namespace={{ $labels.exported_namespace }}' + clusterVariableQueryString,
+              summary: 'Errors detected for KEDA scaled jobs.',
+              description: 'KEDA scaled jobs are experiencing errors. Check the scaled job {{ $labels.scaledObject }} in the namespace {{ $labels.exported_namespace }}.',
+              dashboard_url: $._config.keda.kedaScaledJobDashboardUrl + '?var-scaled_job={{ $labels.scaledObject }}&var-resource_namespace={{ $labels.exported_namespace }}' + clusterVariableQueryString,
             },
             expr: |||
               sum(
                 increase(
                   keda_scaled_job_errors_total{
-                    %(clusterLabel)s="$cluster"
+                    %(kedaSelector)s
                   }[10m]
                 )
-              ) by (%(clusterLabel)s, exported_namespace, scaledJob) > 0
+              ) by (%(clusterLabel)s, job, exported_namespace, scaledObject) > 0
             ||| % kedaConfig,
             'for': '1m',
             labels: {
@@ -153,37 +159,37 @@
           {
             alert: 'KedaScaledObjectErrors',
             annotations: {
-              summary: 'Errors detected in KEDA scaled objects.',
-              description: 'Errors have been detected in KEDA scaled objects. Check the scaled object {{ $labels.scaledObject }} in the namespace {{ $labels.exported_namespace }}.',
+              summary: 'Errors detected for KEDA scaled objects.',
+              description: 'KEDA scaled objects are experiencing errors. Check the scaled object {{ $labels.scaledObject }} in the namespace {{ $labels.exported_namespace }}.',
               dashboard_url: $._config.keda.kedaScaledObjectDashboardUrl + '?var-scaled_object={{ $labels.scaledObject }}&var-resource_namespace={{ $labels.exported_namespace }}' + clusterVariableQueryString,
             },
             expr: |||
               sum(
                 increase(
                   keda_scaled_object_errors_total{
-                    %(clusterLabel)s="$cluster"
+                    %(kedaSelector)s
                   }[10m]
                 )
-              ) by (%(clusterLabel)s, exported_namespace, scaledObject) > 0
+              ) by (%(clusterLabel)s, job, exported_namespace, scaledObject) > 0
             ||| % kedaConfig,
             'for': '1m',
             labels: {
-              severity: 'critical',
+              severity: 'warning',
             },
           },
           {
             alert: 'KedaScalerLatencyHigh',
             annotations: {
-              summary: 'High latency in KEDA scaler metrics.',
-              description: 'Metric latency for scaler {{ $labels.scaler }} for the {{ $labels.scaledObject }} has exceeded acceptable limits.',
+              summary: 'High latency for KEDA scaler metrics.',
+              description: 'Metric latency for scaler {{ $labels.scaler }} for the object {{ $labels.scaledObject }} has exceeded acceptable limits.',
               dashboard_url: $._config.keda.kedaScaledObjectDashboardUrl + '?var-scaled_object={{ $labels.scaledObject }}&var-scaler={{ $labels.scaler }}' + clusterVariableQueryString,
             },
             expr: |||
               avg(
                 keda_scaler_metrics_latency_seconds{
-                  %(clusterLabel)s="$cluster"
+                  %(kedaSelector)s
                 }
-              ) by (%(clusterLabel)s, exported_namespace, scaledObject, scaler) > %(scalerMetricsLatencyThreshold)s
+              ) by (%(clusterLabel)s, job, exported_namespace, scaledObject, scaler) > %(scalerMetricsLatencyThreshold)s
             ||| % kedaConfig,
             'for': '10m',
             labels: {
@@ -194,15 +200,15 @@
             alert: 'KedaScaledObjectPaused',
             annotations: {
               summary: 'KEDA scaled object is paused.',
-              description: 'The scaled object {{ $labels.scaledObject }} in namespace {{ $labels.exported_namespace }} is paused.',
+              description: 'The scaled object {{ $labels.scaledObject }} in namespace {{ $labels.exported_namespace }} is paused for longer than %(scaledObjectPausedThreshold)s. This may indicate a configuration issue or manual intervention.' % kedaConfig,
               dashboard_url: $._config.keda.kedaScaledObjectDashboardUrl + '?var-scaled_object={{ $labels.scaledObject }}&var-resource_namespace={{ $labels.exported_namespace }}' + clusterVariableQueryString,
             },
             expr: |||
-              sum(
+              max(
                 keda_scaled_object_paused{
-                  %(clusterLabel)s="$cluster"
+                  %(kedaSelector)s
                 }
-              ) by (%(clusterLabel)s, exported_namespace, scaledObject) > 0
+              ) by (%(clusterLabel)s, job, exported_namespace, scaledObject) > 0
             ||| % kedaConfig,
             'for': kedaConfig.scaledObjectPausedThreshold,
             labels: {
@@ -220,10 +226,10 @@
               sum(
                 increase(
                   keda_scaler_detail_errors_total{
-                    %(clusterLabel)s="$cluster"
+                    %(kedaSelector)s
                   }[10m]
                 )
-              ) by (%(clusterLabel)s, exported_namespace, scaledObject, type, scaler) > 0
+              ) by (%(clusterLabel)s, job, exported_namespace, scaledObject, type, scaler) > 0
             ||| % kedaConfig,
             'for': '1m',
             labels: {

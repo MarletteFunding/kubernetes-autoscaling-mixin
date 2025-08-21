@@ -1,4 +1,6 @@
 {
+   "__inputs": [ ],
+   "__requires": [ ],
    "description": "A dashboard that monitors Keda and focuses on giving a overview for Scaled Jobs. It is created using the [kubernetes-autoscaling-mixin](https://github.com/adinhodovic/kubernetes-autoscaling-mixin).",
    "editable": true,
    "links": [

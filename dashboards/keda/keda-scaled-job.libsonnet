@@ -490,7 +490,7 @@ local tbPanelOptions = tablePanel.panelOptions;
         dashboard.withAnnotations($._config.customAnnotation)
       else {},
   }) + if $._config.keda.enabled then {
-    'kubernetes-autoscaling-mixin-keda-over.json'+: $._config.bypassDashboardValidation,
+    'kubernetes-autoscaling-mixin-keda-sj.json'+: $._config.bypassDashboardValidation,
   }
   else {},
 }

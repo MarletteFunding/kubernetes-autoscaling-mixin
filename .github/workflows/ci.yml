@@ -3,7 +3,7 @@ permissions: {}
 on:
   push:
     branches:
-      - master
+      - main
   pull_request:
 jobs:
   matrix:
@@ -15,17 +15,17 @@ jobs:
         include:
           - name: Lint Alerts
             run: make --always-make alerts-lint
-          - name: Generate YAML
+          - name: Generate yaml
             run: make --always-make generate && git diff --exit-code
           - name: Lint Grafana Dashboards
             run: make --always-make dashboards-lint
-          - name: Format JSONNET
+          - name: Format Jsonnet
             run: make --always-make jsonnet-fmt && git diff --exit-code
-          - name: Lint JSONNET
+          - name: Lint Jsonnet
             run: make --always-make jsonnet-lint
-          - name: Format MD
+          - name: Format Markdown
             run: make --always-make markdownfmt && git diff --exit-code
-          - name: Lint MD
+          - name: Lint Markdown
             run: make --always-make vale && git diff --exit-code
           - name: Lint YAML
             run: make --always-make pint-lint

@@ -1,15 +1,12 @@
-# yamllint disable rule:line-length
 ---
 rule_files:
-  - prometheus_alerts.yaml
+  - ../prometheus_alerts.yaml
 
 tests:
   # Karpenter
   - interval: 1m
     input_series:
       - series: 'karpenter_cloudprovider_errors_total{namespace="karpenter", job="karpenter", provider="aws", controller="nodeclaim.disruption", method="Get"}'
-        values: "1+1x20"
-      - series: 'karpenter_cloudprovider_errors_total{namespace="karpenter", job="karpenter", provider="aws", controller="nodeclaim.termination", method="Get"}'
         values: "1+1x20"
     alert_rule_test:
       - eval_time: 20m
@@ -107,89 +104,93 @@ tests:
   # KEDA
   - interval: 1m
     input_series:
-      - series: 'keda_scaled_job_errors_total{namespace="keda", job="keda", scaledJob="test"}'
-        values: "1x25"
+      - series: 'keda_scaled_job_errors_total{job="keda-operator", exported_namespace="test", scaledObject="test"}'
+        values: "0+10x15"
     alert_rule_test:
-      - eval_time: 25m
+      - eval_time: 15m
         alertname: KedaScaledJobErrors
         exp_alerts:
           - exp_labels:
-              namespace: keda
-              job: keda
+              job: keda-operator
+              exported_namespace: test
+              scaledObject: test
               severity: warning
             exp_annotations:
-              summary: "Errors detected in KEDA scaled jobs."
-              description: "KEDA scaled jobs are experiencing errors. Check the scaled job in the identified namespace."
-              dashboard_url: "https://grafana.com/d/kubernetes-autoscaling-mixin-keda-jkwq/kubernetes-autoscaling-keda"
+              summary: "Errors detected for KEDA scaled jobs."
+              description: "KEDA scaled jobs are experiencing errors. Check the scaled job test in the namespace test."
+              dashboard_url: "https://grafana.com/d/kubernetes-autoscaling-mixin-kedasj-jkwq/kubernetes-autoscaling-keda-scaled-job?var-scaled_job=test&var-resource_namespace=test"
 
   - interval: 1m
     input_series:
-      - series: 'keda_scaled_object_errors_total{namespace="keda", job="keda"}'
-        values: "1x10"
+      - series: 'keda_scaled_object_errors_total{job="keda-operator", exported_namespace="test", scaledObject="test"}'
+        values: "0+10x15"
     alert_rule_test:
-      - eval_time: 10m
+      - eval_time: 15m
         alertname: KedaScaledObjectErrors
         exp_alerts:
           - exp_labels:
-              namespace: keda
-              job: keda
-              severity: critical
+              job: keda-operator
+              exported_namespace: test
+              scaledObject: test
+              severity: warning
             exp_annotations:
-              summary: "Errors detected in KEDA scaled objects."
-              description: "Errors have been detected in KEDA scaled objects. Check the scaled object in the identified namespace."
-              dashboard_url: "https://grafana.com/d/kubernetes-autoscaling-mixin-keda-jkwq/kubernetes-autoscaling-keda"
+              summary: "Errors detected for KEDA scaled objects."
+              description: "KEDA scaled objects are experiencing errors. Check the scaled object test in the namespace test."
+              dashboard_url: "https://grafana.com/d/kubernetes-autoscaling-mixin-kedaso-jkwq/kubernetes-autoscaling-keda-scaled-object?var-scaled_object=test&var-resource_namespace=test"
 
   - interval: 1m
     input_series:
-      - series: 'keda_scaler_metrics_latency_seconds{namespace="keda", job="keda"}'
-        values: "9x10"
+      - series: 'keda_scaler_metrics_latency_seconds{namespace="keda", job="keda-operator", exported_namespace="test", scaler="prometheus", scaledObject="test"}'
+        values: "10x10"
     alert_rule_test:
       - eval_time: 10m
         alertname: KedaScalerLatencyHigh
         exp_alerts:
           - exp_labels:
-              namespace: keda
-              job: keda
+              job: keda-operator
+              exported_namespace: test
+              scaler: prometheus
+              scaledObject: test
               severity: warning
             exp_annotations:
-              summary: "High latency in KEDA scaler metrics."
-              description: "Latency in scaler metrics for the identified scaled object has exceeded acceptable limits."
-              dashboard_url: "https://grafana.com/d/kubernetes-autoscaling-mixin-keda-jkwq/kubernetes-autoscaling-keda"
+              summary: "High latency for KEDA scaler metrics."
+              description: "Metric latency for scaler prometheus for the object test has exceeded acceptable limits."
+              dashboard_url: "https://grafana.com/d/kubernetes-autoscaling-mixin-kedaso-jkwq/kubernetes-autoscaling-keda-scaled-object?var-scaled_object=test&var-scaler=prometheus"
 
-  - interval: 1h
+  - interval: 1m
     input_series:
-      - series: 'keda_scaled_object_paused{namespace="keda", job="keda", exproted_namespace="test", scaledObject="test"}'
-        values: "1x25"
+      - series: 'keda_scaled_object_paused{namespace="keda", job="keda-operator", exported_namespace="test", scaledObject="test"}'
+        values: "1x1500"
     alert_rule_test:
       - eval_time: 25h
         alertname: KedaScaledObjectPaused
         exp_alerts:
           - exp_labels:
-              namespace: keda
-              job: keda
+              job: keda-operator
+              exported_namespace: test
+              scaledObject: test
               severity: warning
             exp_annotations:
               summary: "KEDA scaled object is paused."
-              description: "The scaled object in the identified namespace is paused."
-              dashboard_url: "https://grafana.com/d/kubernetes-autoscaling-mixin-keda-jkwq/kubernetes-autoscaling-keda"
+              description: "The scaled object test in namespace test is paused for longer than 25h. This may indicate a configuration issue or manual intervention."
+              dashboard_url: "https://grafana.com/d/kubernetes-autoscaling-mixin-kedaso-jkwq/kubernetes-autoscaling-keda-scaled-object?var-scaled_object=test&var-resource_namespace=test"
 
   - interval: 1m
     input_series:
-      - series: 'keda_scaler_detail_errors_total{metric="s0-prometheus", namespace="keda", job="keda", scaledObject="test", scaler="prometheusScaler",triggerIndex="0",type="scaledjob"}'
-        values: "1x15"
+      - series: 'keda_scaler_detail_errors_total{metric="s0-prometheus", namespace="keda", exported_namespace="test", job="keda-operator", scaledObject="test", scaler="prometheusScaler",triggerIndex="0",type="scaledjob"}'
+        values: "0+10x15"
     alert_rule_test:
       - eval_time: 15m
         alertname: KedaScalerDetailErrors
         exp_alerts:
           - exp_labels:
-              metric: s0-prometheus
-              namespace: keda
-              job: keda
+              exported_namespace: test
+              job: keda-operator
               scaledObject: test
               scaler: prometheusScaler
-              triggerIndex: "0"
+              type: scaledjob
               severity: warning
             exp_annotations:
               summary: "Errors detected in KEDA scaler."
-              description: "Errors have occurred in the KEDA scaler. Investigate the scaler for issues in the identified namespace."
-              dashboard_url: "https://grafana.com/d/kubernetes-autoscaling-mixin-keda-jkwq/kubernetes-autoscaling-keda"
+              description: "Errors have occurred in the KEDA scaler prometheusScaler. Investigate the scaler for the scaledjob test in namespace test."
+              dashboard_url: "https://grafana.com/d/kubernetes-autoscaling-mixin-kedaso-jkwq/kubernetes-autoscaling-keda-scaled-object?var-scaler=prometheusScaler&var-scaled_object=test"
