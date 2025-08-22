@@ -1,35 +1,39 @@
 # Prometheus Monitoring Mixin for Kubernetes Autoscaling
 
-A set of Grafana dashboards and Prometheus alerts for Kubernetes Autoscaling using the metrics from Kube-state-metrics, Karpenter and Cluster-autoscaler.
+A set of Grafana dashboards and Prometheus alerts for Kubernetes Autoscaling using the metrics from Kube-state-metrics, Karpenter, and Cluster-autoscaler.
 
-This serves as a extension for the [Kubernetes-mixin](https://github.com/kubernetes-monitoring/kubernetes-mixin) and adds monitoring for components that are not deployed by default in a Kubernetes cluster (VPA, Karpenter, Cluster-Autoscaler).
+This serves as a extension for the [Kubernetes-mixin](https://github.com/kubernetes-monitoring/kubernetes-mixin) and adds monitoring for components that aren't deployed by default in a Kubernetes cluster (VPA, Karpenter, Cluster-Autoscaler).
 
 ## Dashboards
 
 The mixin provides the following dashboards:
 
 - Kubernetes Autoscaling
-    - Pod Disruption Budgets
-    - Horizontal Pod Autoscalers
-    - Vertical Pod Autoscalers
+  - Pod Disruption Budgets
+  - Horizontal Pod Autoscalers
+  - Vertical Pod Autoscalers
 - Cluster Autoscaler
 - Karpenter
-    - Overview
-    - Activity
-    - Performance
+  - Overview
+  - Activity
+  - Performance
+- KEDA
+  - Scaled Objects
+  - Scaled Jobs
 
-There are also generated dashboards in the `./dashboards_out` directory.
+Generated dashboards also exist in the `./dashboards_out` directory.
 
-There are alerts for the following components currently:
+Alerts are created for the following components currently:
 
 - Karpenter
+- Keda
+- Cluster Autoscaler
 
-VPA, Karpenter and Cluster Autoscaler are configurable in the `config.libsonnet` file. They can be disabled by setting the `enabled` field to `false`.
+VPA, Karpenter, Keda, and Cluster Autoscaler are configurable in the `config.libsonnet` file. They can be turned off by setting the `enabled` field to `false`.
 
 ## How to use
 
-This mixin is designed to be vendored into the repo with your infrastructure config.
-To do this, use [jsonnet-bundler](https://github.com/jsonnet-bundler/jsonnet-bundler):
+This mixin is designed to be vendored into the repo with your infrastructure config. To do this, use [jsonnet-bundler](https://github.com/jsonnet-bundler/jsonnet-bundler):
 
 You then have three options for deploying your dashboards
 
@@ -41,8 +45,7 @@ Or import the dashboard using json in `./dashboards_out`, alternatively import t
 
 ## Generate config files
 
-You can manually generate the alerts, dashboards and rules files, but first you
-must install some tools:
+You can manually generate the alerts, dashboards, and rules files, but first you must install some tools:
 
 ```sh
 go get github.com/jsonnet-bundler/jsonnet-bundler/cmd/jb
@@ -64,25 +67,25 @@ make prometheus_alerts.yaml
 make dashboards_out
 ```
 
-The `prometheus_alerts.yaml` file then need to passed
-to your Prometheus server, and the files in `dashboards_out` need to be imported
-into you Grafana server. The exact details will depending on how you deploy your
-monitoring stack.
+The `prometheus_alerts.yaml` file then need to passed to your Prometheus server, and the files in `dashboards_out` need to be imported into you Grafana server. The exact details depend on how you deploy your monitoring stack.
 
 ### Configuration
 
-This mixin has its configuration in the `config.libsonnet` file. You can disable the alerts for VPA, Karpenter and Cluster Autoscaler by setting the `enabled` field to `false`.
+This mixin has its configuration in the `config.libsonnet` file. You can turn off the alerts for VPA, Karpenter, KEDA, and Cluster Autoscaler by setting the `enabled` field to `false`.
 
 ```jsonnet
 {
   _config+:: {
-    vpa+:: {
+    vpa+: {
       enabled: false,
     },
-    karpenter+:: {
+    keda+: {
       enabled: false,
     },
-    clusterAutoscaler+:: {
+    karpenter+: {
+      enabled: false,
+    },
+    clusterAutoscaler+: {
       enabled: false,
     },
   },
@@ -93,7 +96,7 @@ The mixin has all components enabled by default and all the dashboards are gener
 
 ### VPA Requirements
 
-Kube-state-metrics does not ship with VPA metrics by default. You need to deploy a custom kube-state-metrics with the following configuration:
+Kube-state-metrics doesn't ship with VPA metrics by default. You need to deploy a custom kube-state-metrics with the following configuration:
 
 Adjust the `ClusterRole` `kube-state-metrics` to include the following rules:
 
