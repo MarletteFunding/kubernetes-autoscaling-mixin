@@ -189,7 +189,7 @@
                "options": {
                   "excludeByName": {
                      "Time": true,
-                     "cluster": true,
+                     "cluster": false,
                      "job": true,
                      "namespace": true
                   },
@@ -378,7 +378,7 @@
                "options": {
                   "excludeByName": {
                      "Time": true,
-                     "cluster": true,
+                     "cluster": false,
                      "job": true,
                      "namespace": true
                   },
@@ -462,7 +462,7 @@
                   "uid": "$datasource"
                },
                "expr": "max(\n  kube_customresource_verticalpodautoscaler_status_recommendation_containerrecommendations_target{\n    cluster=~\"$cluster\",\n    job=~\"$job\",\n    namespace=~\"$namespace\",\n    resource=\"cpu\",\n    verticalpodautoscaler=~\"$vpa\",\n    container=~\"$container\"\n  }\n) by (cluster, job, namespace, verticalpodautoscaler, container, resource)\n",
-               "legendFormat": "CPU Requests"
+               "legendFormat": "{{cluster}} - CPU Requests"
             },
             {
                "datasource": {
@@ -470,7 +470,7 @@
                   "uid": "$datasource"
                },
                "expr": "max(\n  kube_customresource_verticalpodautoscaler_status_recommendation_containerrecommendations_target{\n    cluster=~\"$cluster\",\n    job=~\"$job\",\n    namespace=~\"$namespace\",\n    resource=\"cpu\",\n    verticalpodautoscaler=~\"$vpa\",\n    container=~\"$container\"\n  }\n) by (cluster, job, namespace, verticalpodautoscaler, container, resource)\n",
-               "legendFormat": "CPU Limits"
+               "legendFormat": "{{cluster}} - CPU Limits"
             }
          ],
          "title": "CPU Guaranteed QoS",
@@ -540,7 +540,7 @@
                   "uid": "$datasource"
                },
                "expr": "max(\n  kube_customresource_verticalpodautoscaler_status_recommendation_containerrecommendations_lowerbound{\n    cluster=~\"$cluster\",\n    job=~\"$job\",\n    namespace=~\"$namespace\",\n    resource=\"cpu\",\n    verticalpodautoscaler=~\"$vpa\",\n    container=~\"$container\"\n  }\n) by (cluster, job, namespace, verticalpodautoscaler, container, resource)\n",
-               "legendFormat": "CPU Requests"
+               "legendFormat": "{{cluster}} - CPU Requests"
             },
             {
                "datasource": {
@@ -548,7 +548,7 @@
                   "uid": "$datasource"
                },
                "expr": "max(\n  kube_customresource_verticalpodautoscaler_status_recommendation_containerrecommendations_upperbound{\n    cluster=~\"$cluster\",\n    job=~\"$job\",\n    namespace=~\"$namespace\",\n    resource=\"cpu\",\n    verticalpodautoscaler=~\"$vpa\",\n    container=~\"$container\"\n  }\n) by (cluster, job, namespace, verticalpodautoscaler, container, resource)\n",
-               "legendFormat": "CPU Limits"
+               "legendFormat": "{{cluster}} - CPU Limits"
             }
          ],
          "title": "CPU Burstable QoS",
@@ -594,7 +594,7 @@
                   "uid": "$datasource"
                },
                "expr": "max(\n  kube_customresource_verticalpodautoscaler_status_recommendation_containerrecommendations_target{\n    cluster=~\"$cluster\",\n    job=~\"$job\",\n    namespace=~\"$namespace\",\n    resource=\"memory\",\n    verticalpodautoscaler=~\"$vpa\",\n    container=~\"$container\"\n  }\n) by (cluster, job, namespace, verticalpodautoscaler, container, resource)\n",
-               "legendFormat": "Memory Requests"
+               "legendFormat": "{{cluster}} - Memory Requests"
             },
             {
                "datasource": {
@@ -602,7 +602,7 @@
                   "uid": "$datasource"
                },
                "expr": "max(\n  kube_customresource_verticalpodautoscaler_status_recommendation_containerrecommendations_target{\n    cluster=~\"$cluster\",\n    job=~\"$job\",\n    namespace=~\"$namespace\",\n    resource=\"memory\",\n    verticalpodautoscaler=~\"$vpa\",\n    container=~\"$container\"\n  }\n) by (cluster, job, namespace, verticalpodautoscaler, container, resource)\n",
-               "legendFormat": "Memory Limits"
+               "legendFormat": "{{cluster}} - Memory Limits"
             }
          ],
          "title": "Memory Guaranteed QoS",
@@ -672,7 +672,7 @@
                   "uid": "$datasource"
                },
                "expr": "max(\n  kube_customresource_verticalpodautoscaler_status_recommendation_containerrecommendations_lowerbound{\n    cluster=~\"$cluster\",\n    job=~\"$job\",\n    namespace=~\"$namespace\",\n    resource=\"memory\",\n    verticalpodautoscaler=~\"$vpa\",\n    container=~\"$container\"\n  }\n) by (cluster, job, namespace, verticalpodautoscaler, container, resource)\n",
-               "legendFormat": "Memory Requests"
+               "legendFormat": "{{cluster}} - Memory Requests"
             },
             {
                "datasource": {
@@ -680,7 +680,7 @@
                   "uid": "$datasource"
                },
                "expr": "max(\n  kube_customresource_verticalpodautoscaler_status_recommendation_containerrecommendations_upperbound{\n    cluster=~\"$cluster\",\n    job=~\"$job\",\n    namespace=~\"$namespace\",\n    resource=\"memory\",\n    verticalpodautoscaler=~\"$vpa\",\n    container=~\"$container\"\n  }\n) by (cluster, job, namespace, verticalpodautoscaler, container, resource)\n",
-               "legendFormat": "Memory Limits"
+               "legendFormat": "{{cluster}} - Memory Limits"
             }
          ],
          "title": "Memory Burstable QoS",
@@ -732,7 +732,7 @@
                   "uid": "$datasource"
                },
                "expr": "max(\n  kube_customresource_verticalpodautoscaler_status_recommendation_containerrecommendations_lowerbound{\n    cluster=~\"$cluster\",\n    job=~\"$job\",\n    namespace=~\"$namespace\",\n    resource=\"cpu\",\n    verticalpodautoscaler=~\"$vpa\",\n    container=~\"$container\"\n  }\n) by (cluster, job, namespace, verticalpodautoscaler, container, resource)\n",
-               "legendFormat": "Lower Bound"
+               "legendFormat": "{{cluster}} - Lower Bound"
             },
             {
                "datasource": {
@@ -740,7 +740,7 @@
                   "uid": "$datasource"
                },
                "expr": "max(\n  kube_customresource_verticalpodautoscaler_status_recommendation_containerrecommendations_target{\n    cluster=~\"$cluster\",\n    job=~\"$job\",\n    namespace=~\"$namespace\",\n    resource=\"cpu\",\n    verticalpodautoscaler=~\"$vpa\",\n    container=~\"$container\"\n  }\n) by (cluster, job, namespace, verticalpodautoscaler, container, resource)\n",
-               "legendFormat": "Target"
+               "legendFormat": "{{cluster}} - Target"
             },
             {
                "datasource": {
@@ -748,7 +748,7 @@
                   "uid": "$datasource"
                },
                "expr": "max(\n  kube_customresource_verticalpodautoscaler_status_recommendation_containerrecommendations_upperbound{\n    cluster=~\"$cluster\",\n    job=~\"$job\",\n    namespace=~\"$namespace\",\n    resource=\"cpu\",\n    verticalpodautoscaler=~\"$vpa\",\n    container=~\"$container\"\n  }\n) by (cluster, job, namespace, verticalpodautoscaler, container, resource)\n",
-               "legendFormat": "Upper Bound"
+               "legendFormat": "{{cluster}} - Upper Bound"
             },
             {
                "datasource": {
@@ -756,7 +756,7 @@
                   "uid": "$datasource"
                },
                "expr": "avg(\n  node_namespace_pod_container:container_cpu_usage_seconds_total:sum_irate{\n    cluster=~\"$cluster\",\n    namespace=~\"$namespace\",\n    pod=~\"$vpa-.*\",\n    container=~\"$container\",\n    container!=\"\"\n  }\n) by (cluster, container)\n",
-               "legendFormat": "Usage"
+               "legendFormat": "{{cluster}} - Usage"
             },
             {
                "datasource": {
@@ -764,7 +764,7 @@
                   "uid": "$datasource"
                },
                "expr": "max(\n  kube_pod_container_resource_requests{\n    cluster=~\"$cluster\",\n    job=~\"$job\",\n    namespace=~\"$namespace\",\n    pod=~\"$vpa-.*\",\n    resource=~\"cpu\",\n    container=~\"$container\"\n  }\n) by (cluster, container)\n",
-               "legendFormat": "Requests"
+               "legendFormat": "{{cluster}} - Requests"
             },
             {
                "datasource": {
@@ -772,7 +772,7 @@
                   "uid": "$datasource"
                },
                "expr": "max(\n  kube_pod_container_resource_limits{\n    cluster=~\"$cluster\",\n    job=~\"$job\",\n    namespace=~\"$namespace\",\n    pod=~\"$vpa-.*\",\n    resource=~\"cpu\",\n    container=~\"$container\"\n  }\n) by (cluster, container)\n",
-               "legendFormat": "Limits"
+               "legendFormat": "{{cluster}} - Limits"
             }
          ],
          "title": "VPA CPU Recommendations Over Time",
@@ -824,7 +824,7 @@
                   "uid": "$datasource"
                },
                "expr": "max(\n  kube_customresource_verticalpodautoscaler_status_recommendation_containerrecommendations_lowerbound{\n    cluster=~\"$cluster\",\n    job=~\"$job\",\n    namespace=~\"$namespace\",\n    resource=\"memory\",\n    verticalpodautoscaler=~\"$vpa\",\n    container=~\"$container\"\n  }\n) by (cluster, job, namespace, verticalpodautoscaler, container, resource)\n",
-               "legendFormat": "Lower Bound"
+               "legendFormat": "{{cluster}} - Lower Bound"
             },
             {
                "datasource": {
@@ -832,7 +832,7 @@
                   "uid": "$datasource"
                },
                "expr": "max(\n  kube_customresource_verticalpodautoscaler_status_recommendation_containerrecommendations_target{\n    cluster=~\"$cluster\",\n    job=~\"$job\",\n    namespace=~\"$namespace\",\n    resource=\"memory\",\n    verticalpodautoscaler=~\"$vpa\",\n    container=~\"$container\"\n  }\n) by (cluster, job, namespace, verticalpodautoscaler, container, resource)\n",
-               "legendFormat": "Target"
+               "legendFormat": "{{cluster}} - Target"
             },
             {
                "datasource": {
@@ -840,7 +840,7 @@
                   "uid": "$datasource"
                },
                "expr": "max(\n  kube_customresource_verticalpodautoscaler_status_recommendation_containerrecommendations_upperbound{\n    cluster=~\"$cluster\",\n    job=~\"$job\",\n    namespace=~\"$namespace\",\n    resource=\"memory\",\n    verticalpodautoscaler=~\"$vpa\",\n    container=~\"$container\"\n  }\n) by (cluster, job, namespace, verticalpodautoscaler, container, resource)\n",
-               "legendFormat": "Upper Bound"
+               "legendFormat": "{{cluster}} - Upper Bound"
             },
             {
                "datasource": {
@@ -848,7 +848,7 @@
                   "uid": "$datasource"
                },
                "expr": "avg(\n  container_memory_working_set_bytes{\n    cluster=~\"$cluster\",\n    namespace=~\"$namespace\",\n    pod=~\"$vpa-.*\",\n    container=~\"$container\"\n  }\n) by (cluster, container)\n",
-               "legendFormat": "Usage"
+               "legendFormat": "{{cluster}} - Usage"
             },
             {
                "datasource": {
@@ -856,7 +856,7 @@
                   "uid": "$datasource"
                },
                "expr": "max(\n  kube_pod_container_resource_requests{\n    cluster=~\"$cluster\",\n    job=~\"$job\",\n    namespace=~\"$namespace\",\n    pod=~\"$vpa-.*\",\n    resource=~\"memory\",\n    container=~\"$container\"\n  }\n) by (cluster, container)\n",
-               "legendFormat": "Requests"
+               "legendFormat": "{{cluster}} - Requests"
             },
             {
                "datasource": {
@@ -864,7 +864,7 @@
                   "uid": "$datasource"
                },
                "expr": "max(\n  kube_pod_container_resource_limits{\n    cluster=~\"$cluster\",\n    job=~\"$job\",\n    namespace=~\"$namespace\",\n    pod=~\"$vpa-.*\",\n    resource=~\"memory\",\n    container=~\"$container\"\n  }\n) by (cluster, container)\n",
-               "legendFormat": "Limits"
+               "legendFormat": "{{cluster}} - Limits"
             }
          ],
          "title": "VPA Memory Recommendations Over Time",
@@ -883,8 +883,8 @@
          {
             "current": {
                "selected": true,
-               "text": "default",
-               "value": "default"
+               "text": "Thanos",
+               "value": "Thanos"
             },
             "label": "Data source",
             "name": "datasource",
@@ -896,8 +896,9 @@
                "type": "prometheus",
                "uid": "${datasource}"
             },
-            "hide": 2,
+            "hide": 0,
             "label": "Cluster",
+            "multi": true,
             "name": "cluster",
             "query": "label_values(kube_pod_info{job=~\"kube-state-metrics\"}, cluster)",
             "refresh": 2,

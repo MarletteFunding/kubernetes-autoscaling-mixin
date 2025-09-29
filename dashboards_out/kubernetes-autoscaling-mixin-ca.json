@@ -618,8 +618,8 @@
          {
             "current": {
                "selected": true,
-               "text": "default",
-               "value": "default"
+               "text": "Thanos",
+               "value": "Thanos"
             },
             "label": "Data source",
             "name": "datasource",
@@ -631,7 +631,7 @@
                "type": "prometheus",
                "uid": "${datasource}"
             },
-            "hide": 2,
+            "hide": 0,
             "label": "Cluster",
             "name": "cluster",
             "query": "label_values(kube_pod_info{job=~\"kube-state-metrics\"}, cluster)",
