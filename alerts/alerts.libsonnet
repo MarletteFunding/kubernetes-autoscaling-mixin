@@ -11,7 +11,7 @@
             alert: 'KarpenterCanNotRegisterNewNodes',
             annotations: {
               summary: 'Problem with registering new nodes in the cluster.',
-              description: 'Karpenter in the nodepool {{ $labels.nodepool }} launched new nodes, but some of the nodes did not register in the cluster during 15 min.',
+              description: 'Karpenter on cluster {{ $labels.cluster }} in the nodepool {{ $labels.nodepool }} launched new nodes, but some of the nodes did not register in the cluster during 15 min.',
               dashboard_url: $._config.karpenter.karpenterActivityDashboardUrl + clusterVariableQueryString,
             },
             expr: |||
@@ -45,7 +45,7 @@
             'for': '5m',
             annotations: {
               summary: 'Karpenter has Cloud Provider Errors.',
-              description: 'The Karpenter provider {{ $labels.provider }} with the controller {{ $labels.controller }} has errors with the method {{ $labels.method }}.',
+              description: 'The Karpenter provider {{ $labels.provider }} on cluster {{ $labels.cluster }} with the controller {{ $labels.controller }} has errors with the method {{ $labels.method }}.',
               dashboard_url: $._config.karpenter.karpenterPerformanceDashboardUrl + clusterVariableQueryString,
             },
           },
@@ -70,7 +70,7 @@
             'for': '15m',
             annotations: {
               summary: 'Karpenter Node Claims Termination Duration is High.',
-              description: 'The average node claim termination duration in Karpenter has exceeded %s minutes for more than 15 minutes in nodepool {{ $labels.nodepool }}. This may indicate cloud provider issues or improper instance termination handling.' % std.toString($._config.karpenter.nodeclaimTerminationThreshold / 60),
+              description: 'The average node claim termination duration in Karpenter on cluster {{ $labels.cluster }} has exceeded %s minutes for more than 15 minutes in nodepool {{ $labels.nodepool }}. This may indicate cloud provider issues or improper instance termination handling.' % std.toString($._config.karpenter.nodeclaimTerminationThreshold / 60),
               dashboard_url: $._config.karpenter.karpenterActivityDashboardUrl + clusterVariableQueryString,
             },
           },
@@ -78,7 +78,7 @@
             alert: 'KarpenterNodepoolNearCapacity',
             annotations: {
               summary: 'Karpenter Nodepool near capacity.',
-              description: 'The resource {{ $labels.resource_type }} in the Karpenter node pool {{ $labels.nodepool }} is nearing its limit. Consider scaling or adding resources.',
+              description: 'The resource {{ $labels.resource_type }} in the Karpenter node pool {{ $labels.nodepool }} on cluster {{ $labels.cluster }} is nearing its limit. Consider scaling or adding resources.',
               dashboard_url: $._config.karpenter.karpenterOverviewDashboardUrl + clusterVariableQueryString,
             },
             expr: |||
@@ -106,7 +106,7 @@
             alert: 'ClusterAutoscalerNodeCountNearCapacity',
             annotations: {
               summary: 'Cluster Autoscaler Node Count near Capacity.',
-              description: 'The node count for the cluster autoscaler job {{ $labels.job }} is reaching max limit. Consider scaling node groups.',
+              description: 'The node count for the cluster autoscaler job {{ $labels.job }} on cluster {{ $labels.cluster }} is reaching max limit. Consider scaling node groups.',
               dashboard_url: $._config.clusterAutoscaler.clusterAutoscalerDashboardUrl + clusterVariableQueryString,
             },
             expr: |||
@@ -132,7 +132,7 @@
             alert: 'ClusterAutoscalerUnschedulablePods',
             annotations: {
               summary: 'Pods Pending Scheduling - Cluster Node Group Scaling Required',
-              description: 'The cluster currently has unschedulable pods, indicating resource shortages. Consider adding more nodes or increasing node group capacity.',
+              description: 'Cluster {{ $labels.cluster }} currently has unschedulable pods, indicating resource shortages. Consider adding more nodes or increasing node group capacity.',
               dashboard_url: $._config.clusterAutoscaler.clusterAutoscalerDashboardUrl + clusterVariableQueryString,
             },
             expr: |||
@@ -158,7 +158,7 @@
             alert: 'KedaScaledJobErrors',
             annotations: {
               summary: 'Errors detected for KEDA scaled jobs.',
-              description: 'KEDA scaled jobs are experiencing errors. Check the scaled job {{ $labels.scaledObject }} in the namespace {{ $labels.exported_namespace }}.',
+              description: 'KEDA scaled jobs on cluster {{ $labels.cluster }} are experiencing errors. Check the scaled job {{ $labels.scaledObject }} in the namespace {{ $labels.exported_namespace }}.',
               dashboard_url: $._config.keda.kedaScaledJobDashboardUrl + '?var-scaled_job={{ $labels.scaledObject }}&var-resource_namespace={{ $labels.exported_namespace }}' + clusterVariableQueryString,
             },
             expr: |||
@@ -179,7 +179,7 @@
             alert: 'KedaScaledObjectErrors',
             annotations: {
               summary: 'Errors detected for KEDA scaled objects.',
-              description: 'KEDA scaled objects are experiencing errors. Check the scaled object {{ $labels.scaledObject }} in the namespace {{ $labels.exported_namespace }}.',
+              description: 'KEDA scaled objects on cluster {{ $labels.cluster }} are experiencing errors. Check the scaled object {{ $labels.scaledObject }} in the namespace {{ $labels.exported_namespace }}.',
               dashboard_url: $._config.keda.kedaScaledObjectDashboardUrl + '?var-scaled_object={{ $labels.scaledObject }}&var-resource_namespace={{ $labels.exported_namespace }}' + clusterVariableQueryString,
             },
             expr: |||
@@ -200,7 +200,7 @@
             alert: 'KedaScalerLatencyHigh',
             annotations: {
               summary: 'High latency for KEDA scaler metrics.',
-              description: 'Metric latency for scaler {{ $labels.scaler }} for the object {{ $labels.scaledObject }} has exceeded acceptable limits.',
+              description: 'Metric latency for scaler {{ $labels.scaler }} on cluster {{ $labels.cluster }} for the object {{ $labels.scaledObject }} has exceeded acceptable limits.',
               dashboard_url: $._config.keda.kedaScaledObjectDashboardUrl + '?var-scaled_object={{ $labels.scaledObject }}&var-scaler={{ $labels.scaler }}' + clusterVariableQueryString,
             },
             expr: |||
@@ -219,7 +219,7 @@
             alert: 'KedaScaledObjectPaused',
             annotations: {
               summary: 'KEDA scaled object is paused.',
-              description: 'The scaled object {{ $labels.scaledObject }} in namespace {{ $labels.exported_namespace }} is paused for longer than %(scaledObjectPausedThreshold)s. This may indicate a configuration issue or manual intervention.' % kedaConfig,
+              description: 'The scaled object {{ $labels.scaledObject }} in namespace {{ $labels.exported_namespace }} on cluster {{ $labels.cluster }} is paused for longer than %(scaledObjectPausedThreshold)s. This may indicate a configuration issue or manual intervention.' % kedaConfig,
               dashboard_url: $._config.keda.kedaScaledObjectDashboardUrl + '?var-scaled_object={{ $labels.scaledObject }}&var-resource_namespace={{ $labels.exported_namespace }}' + clusterVariableQueryString,
             },
             expr: |||
@@ -238,7 +238,7 @@
             alert: 'KedaScalerDetailErrors',
             annotations: {
               summary: 'Errors detected in KEDA scaler.',
-              description: 'Errors have occurred in the KEDA scaler {{ $labels.scaler }}. Investigate the scaler for the {{ $labels.type }} {{ $labels.scaledObject }} in namespace {{ $labels.exported_namespace }}.',
+              description: 'Errors have occurred in the KEDA scaler {{ $labels.scaler }} on cluster {{ $labels.cluster }}. Investigate the scaler for the {{ $labels.type }} {{ $labels.scaledObject }} in namespace {{ $labels.exported_namespace }}.',
               dashboard_url: $._config.keda.kedaScaledObjectDashboardUrl + '?var-scaler={{ $labels.scaler }}&var-scaled_object={{ $labels.scaledObject }}' + clusterVariableQueryString,
             },
             expr: |||
