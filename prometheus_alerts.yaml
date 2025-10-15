@@ -1,10 +1,24 @@
 "groups":
 - "name": "karpenter"
   "rules":
+  - "alert": "KarpenterCanNotRegisterNewNodes"
+    "annotations":
+      "dashboard_url": "https://grafana.devops.bestegg.com/d/kubernetes-autoscaling-mixin-kact-jkwq/kubernetes-autoscaling-karpenter-activity&var-cluster={{ $labels.cluster }}"
+      "description": "Karpenter on cluster {{ $labels.cluster }} in the nodepool {{ $labels.nodepool }} launched new nodes, but some of the nodes did not register in the cluster during 15 min."
+      "summary": "Problem with registering new nodes in the cluster."
+    "expr": |
+      sum by (nodepool) (
+        karpenter_nodeclaims_launched{job="karpenter"}
+      ) - sum by (nodepool) (
+        karpenter_nodeclaims_registered{job="karpenter"}
+      ) != 0
+    "for": "15m"
+    "labels":
+      "severity": "warning"
   - "alert": "KarpenterCloudProviderErrors"
     "annotations":
       "dashboard_url": "https://grafana.devops.bestegg.com/d/kubernetes-autoscaling-mixin-kperf-jkwq/kubernetes-autoscaling-karpenter-performance&var-cluster={{ $labels.cluster }}"
-      "description": "The Karpenter provider {{ $labels.provider }} with the controller {{ $labels.controller }} has errors with the method {{ $labels.method }}."
+      "description": "The Karpenter provider {{ $labels.provider }} on cluster {{ $labels.cluster }} with the controller {{ $labels.controller }} has errors with the method {{ $labels.method }}."
       "summary": "Karpenter has Cloud Provider Errors."
     "expr": |
       sum(
@@ -22,7 +36,7 @@
   - "alert": "KarpenterNodeClaimsTerminationDurationHigh"
     "annotations":
       "dashboard_url": "https://grafana.devops.bestegg.com/d/kubernetes-autoscaling-mixin-kact-jkwq/kubernetes-autoscaling-karpenter-activity&var-cluster={{ $labels.cluster }}"
-      "description": "The average node claim termination duration in Karpenter has exceeded 20 minutes for more than 15 minutes in nodepool {{ $labels.nodepool }}. This may indicate cloud provider issues or improper instance termination handling."
+      "description": "The average node claim termination duration in Karpenter on cluster {{ $labels.cluster }} has exceeded 20 minutes for more than 15 minutes in nodepool {{ $labels.nodepool }}. This may indicate cloud provider issues or improper instance termination handling."
       "summary": "Karpenter Node Claims Termination Duration is High."
     "expr": |
       sum(
@@ -42,7 +56,7 @@
   - "alert": "KarpenterNodepoolNearCapacity"
     "annotations":
       "dashboard_url": "https://grafana.devops.bestegg.com/d/kubernetes-autoscaling-mixin-kover-jkwq/kubernetes-autoscaling-karpenter-overview&var-cluster={{ $labels.cluster }}"
-      "description": "The resource {{ $labels.resource_type }} in the Karpenter node pool {{ $labels.nodepool }} is nearing its limit. Consider scaling or adding resources."
+      "description": "The resource {{ $labels.resource_type }} in the Karpenter node pool {{ $labels.nodepool }} on cluster {{ $labels.cluster }} is nearing its limit. Consider scaling or adding resources."
       "summary": "Karpenter Nodepool near capacity."
     "expr": |
       sum (
