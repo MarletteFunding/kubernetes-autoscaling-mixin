@@ -8,6 +8,25 @@
         name: 'karpenter',
         rules: [
           {
+            alert: 'KarpenterCanNotRegisterNewNodes',
+            annotations: {
+              summary: 'Problem with registering new nodes in the cluster.',
+              description: 'Karpenter in the nodepool {{ $labels.nodepool }} launched new nodes, but some of the nodes did not register in the cluster during 15 min.',
+              dashboard_url: $._config.karpenter.karpenterActivityDashboardUrl + clusterVariableQueryString,
+            },
+            expr: |||
+              sum by (nodepool) (
+                karpenter_nodeclaims_launched{%(karpenterSelector)s}
+              ) - sum by (nodepool) (
+                karpenter_nodeclaims_registered{%(karpenterSelector)s}
+              ) != 0
+            ||| % karpenterConfig,
+            'for': '15m',
+            labels: {
+              severity: 'warning',
+            },
+          },
+          {
             alert: 'KarpenterCloudProviderErrors',
             expr: |||
               sum(
